@@ -1,0 +1,113 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #ff0000 0%, #ff00dc 100%);
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+
+.login-card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+  width: 380px;
+  text-align: center;
+
+  position: relative;
+  margin-bottom: 30px; 
+}
+
+/* زر الرجوع */
+.back-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #ff6b81;
+  color: white;
+  border:outset;
+  padding: 8px 14px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.back-btn:hover {
+  background: #ff4757;
+}
+
+.login-card h1 {
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: bold;
+}
+
+.login-card p {
+  
+  margin-bottom: 20px;
+  color: #666;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 15px;
+  transition: 0.2s;
+}
+
+.login-card input:focus {
+  border-color: #6a11cb;
+  box-shadow: 0 0 8px rgba(106, 17, 203, 0.4);
+}
+
+.login-card button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #6a11cb, #ff0000);
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.login-card button[type="submit"]:hover {
+  background: linear-gradient(135deg, #2575fc, #6a11cb);
+}
+
+.register-text {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #333;
+}
+
+.login-card a {
+  color: #6a11cb;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.login-card a:hover {
+  text-decoration: underline;
+}
+/* Footer */
+.login-footer {
+  margin-top: auto; 
+  padding: 15px 0;
+  text-align: center;
+  color: #fff;
+  font-size: 14px;
+  opacity: 0.9;
+}

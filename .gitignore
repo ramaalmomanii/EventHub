@@ -1,0 +1,26 @@
+# Visual Studio
+.vs/
+bin/
+obj/
+
+# User files
+*.user
+*.suo
+
+# Node.js
+node_modules/
+npm-debug.log*
+
+# Build / output
+dist/
+build/
+
+# Zip files
+*.zip
+
+# Environment
+.env
+
+# OS
+.DS_Store
+Thumbs.db

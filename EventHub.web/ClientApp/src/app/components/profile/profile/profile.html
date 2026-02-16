@@ -1,0 +1,27 @@
+<div class="profile-container" *ngIf="user()">
+  <!-- الجزء العلوي: Avatar + الاسم + دور المستخدم -->
+  <div class="profile-header">
+    <div class="avatar">
+      <img src="assets/avatar-placeholder.png" alt="User Avatar">
+      <button class="edit-btn" (click)="editProfile()">✏️ Edit</button>
+    </div>
+    <div class="user-info">
+      <h2>{{ user().fullName }}</h2>
+      <p>{{ user().role }}</p>
+    </div>
+  </div>
+
+  <!-- الجزء السفلي: Events -->
+  <div class="profile-events">
+    <h3>الأحداث المسجلة</h3>
+    <ul>
+      <li *ngFor="let event of user().events">{{ event.name }} - {{ event.date | date }}</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Loader -->
+<div *ngIf="loading()" class="loader">تحميل...</div>
+
+<!-- Error Message -->
+<div *ngIf="errorMsg()" class="error-msg">{{ errorMsg() }}</div>

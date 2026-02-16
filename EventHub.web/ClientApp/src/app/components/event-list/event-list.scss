@@ -1,0 +1,12 @@
+.event-list {
+  margin-top: 70px; // لأن الهيدر ثابت
+  padding: 1rem;
+
+  .event-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+}

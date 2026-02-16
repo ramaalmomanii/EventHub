@@ -1,0 +1,134 @@
+.register-container {
+  max-width: 420px;
+  margin: 60px auto;
+  padding: 40px;
+  background: linear-gradient(135deg, #1f1c2c, #928dab);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+  color: #fff;
+  text-align: center;
+  animation: fadeIn 0.8s ease-in-out;
+
+  h2 {
+    margin-bottom: 25px;
+    font-size: 30px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 15px;
+        color: #ffcccb;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px 15px;
+        border-radius: 12px;
+        border: none;
+        outline: none;
+        font-size: 16px;
+        background: #f4f4f4;
+        color: #333;
+        transition: 0.3s;
+
+        &:focus {
+          box-shadow: 0 0 8px #ff6b81;
+        }
+      }
+
+      span {
+        color: #ffcccb;
+        font-size: 13px;
+        margin-top: 5px;
+        display: block;
+      }
+    }
+
+    .btn-primary {
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ff6b81, #ff4757);
+      color: #fff;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 10px;
+
+      &:hover {
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        transform: translateY(-2px);
+      }
+
+      &:disabled {
+        background: #aaa;
+        cursor: not-allowed;
+      }
+    }
+
+    .success {
+      margin-top: 15px;
+      color: #32cd32;
+      font-weight: bold;
+    }
+
+    .error {
+      margin-top: 15px;
+      color: #ff6b6b;
+      font-weight: bold;
+    }
+  }
+
+  .btn-secondary {
+    margin-top: 20px;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 12px;
+    background: #444;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+
+    &:hover {
+      background: #333;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Footer */
+.login-footer {
+  margin-top: auto;
+  padding: 15px 0;
+  text-align: center;
+  color: #fff;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
