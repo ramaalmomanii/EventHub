@@ -23,6 +23,12 @@
     <PackageReference Include="QRCoder" Version="1.6.0" />
   </ItemGroup>
 
+	<ItemGroup>
+		<Compile Remove="EventHub.web\**" />
+		<Content Remove="EventHub.web\**" />
+		<None Remove="EventHub.web\**" />
+	</ItemGroup>
+	
   <ItemGroup>
     <ProjectReference Include="..\EventHub.Core\EventHub.Core.csproj" />
   </ItemGroup>

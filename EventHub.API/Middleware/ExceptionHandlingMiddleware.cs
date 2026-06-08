@@ -47,7 +47,6 @@ namespace EventHub.API.Middleware
                     message = "The requested resource was not found.";
                     break;
                 case ArgumentException:
-                case ArgumentNullException:
                     code = HttpStatusCode.BadRequest;
                     message = exception.Message;
                     break;

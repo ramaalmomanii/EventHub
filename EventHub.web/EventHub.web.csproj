@@ -13,6 +13,12 @@
     <Folder Include="ClientApp\src\assets\" />
   </ItemGroup>
 
+	<ItemGroup>
+		<Compile Remove="EventHub.Infrastructure\**" />
+		<Content Remove="EventHub.Infrastructure\**" />
+		<None Remove="EventHub.Infrastructure\**" />
+	</ItemGroup>
+	
   <ItemGroup>
     <PackageReference Include="BouncyCastle.NetCore" Version="2.2.1" />
   </ItemGroup>

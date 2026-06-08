@@ -9,6 +9,7 @@ namespace EventHub.Core.DTOs.Events
     public class EventReadDto
     {
         public int Id { get; set; }
+        public int OrganizerId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string CategoryName { get; set; }

@@ -99,8 +99,7 @@ namespace EventHub.API.Controllers
 
                 // Only admin or organizer who created the event can update it
                 if (role == "Organizer" && ev.OrganizerId != userId)
-                    return Forbid(new { message = "You cannot update events created by other organizers." });
-
+                    return StatusCode(403, new { message = "You cannot update events created by other organizers." });
                 var updated = await _service.UpdateAsync(id, dto);
                 return Ok(updated);
             }
@@ -137,8 +136,7 @@ namespace EventHub.API.Controllers
 
                 // Only admin or organizer who created the event can delete it
                 if (role == "Organizer" && ev.OrganizerId != userId)
-                    return Forbid(new { message = "You cannot delete events created by other organizers." });
-
+                    return StatusCode(403, new { message = "You cannot update events created by other organizers." });
                 await _service.DeleteAsync(id);
                 return NoContent();
             }
