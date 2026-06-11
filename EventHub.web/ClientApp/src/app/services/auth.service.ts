@@ -23,7 +23,7 @@ export interface UserProfile {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'https://localhost:7088/api/user';
+  private apiUrl = 'https://localhost:44370/api/user';
   constructor(private http: HttpClient) { }
 
   // Register a new user
@@ -32,8 +32,8 @@ export class AuthService {
 
   }
   // Login a user
-  login(dto: LoginDto): Observable<{ token: string }> {
-    return this.http.post<{ token: string }>(`${this.apiUrl}/login`, dto);
+  login(dto: LoginDto): Observable<{ accessToken: string; refreshToken: string }> {
+    return this.http.post<{ accessToken: string; refreshToken: string }>(`${this.apiUrl}/login`, dto);
   }
   // get user profile
   getMyProfile(): Observable<UserProfile> {

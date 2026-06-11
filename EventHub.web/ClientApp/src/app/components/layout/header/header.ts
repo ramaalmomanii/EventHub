@@ -1,14 +1,21 @@
+// header.ts
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { MenuItem } from 'primeng/api';
+
+interface NavItem {
+  label: string;
+  command: () => void;
+}
 
 @Component({
   selector: 'app-header',
+  standalone: true,
+  imports: [],
   templateUrl: './header.html',
   styleUrls: ['./header.scss']
 })
 export class Header {
-  userMenuItems: MenuItem[];
+  userMenuItems: NavItem[]; 
   dropdownOpen = false;
 
   constructor(private router: Router) {
@@ -28,7 +35,7 @@ export class Header {
   }
 
   logout() {
-    localStorage.removeItem('token'); // أو حسب كيف مخزن التوكين
+    localStorage.removeItem('token');
     this.router.navigate(['/login']);
     this.dropdownOpen = false;
   }

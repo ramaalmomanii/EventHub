@@ -20,8 +20,8 @@ export class Login {
     this.authService.login(this.loginData).subscribe({
       next: (res) => {
         console.log('✅ Logged in:', res);
-        localStorage.setItem('token', res.token);
-        alert('تم تسجيل الدخول بنجاح ✅');
+        localStorage.setItem('token', res.accessToken);
+        //alert('تم تسجيل الدخول بنجاح ✅');
         this.router.navigate(['me']);
         // TODO: Navigate to home/dashboard
       },
@@ -29,7 +29,7 @@ export class Login {
         if (err.status === 401) {
           alert('الحساب غير موجود أو كلمة المرور خاطئة.\nإنشئ حساب جديد إذا لم يكن لديك واحد.');
           // ممكن تعملي Navigation إلى صفحة التسجيل
-          // this.router.navigate(['/register']);
+           this.router.navigate(['/register']);
         } else {
           alert('حدث خطأ أثناء تسجيل الدخول.');
         }

@@ -1,6 +1,10 @@
 <div class="event-list">
-  <div *ngFor="let event of events" class="event-card">
+  @for (event of events; track event.title) {
+  <div class="event-card">
     <h3>{{event.title}}</h3>
     <p>{{event.date}} - {{event.location}}</p>
   </div>
+  } @empty {
+  <p>لا توجد فعاليات حالياً.</p>
+  }
 </div>

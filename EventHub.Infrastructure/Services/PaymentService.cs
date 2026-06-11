@@ -1,149 +1,154 @@
-﻿using System;
+﻿using EventHub.Core.Constants;
+using EventHub.Core.DTOs.Payments;
+using EventHub.Core.Entities;
+using EventHub.Core.Exceptions;
+using EventHub.Core.Interfaces.Services;
+using EventHub.Core.Repositories;
+using iText.Layout.Element;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EventHub.Core.DTOs.Payments;
-using EventHub.Core.Entities;
-using EventHub.Core.Interfaces.Services;
-using EventHub.Core.Repositories;
-using iText.Layout.Element;
 
 
 namespace EventHub.Infrastructure.Services
 {
-    public class PaymentService : IPaymentService
-    {
-        private readonly IPaymentRepository _paymentRepo;
-        private readonly IRegistrationRepository _registrationRepo;
-        private readonly IGenericRepository<Payment> _genericRepo;
-
-        public PaymentService(IPaymentRepository paymentRepo, IRegistrationRepository registrationRepo)
+        public class PaymentService : IPaymentService
         {
-            _paymentRepo = paymentRepo;
-            _registrationRepo = registrationRepo;
-        }
+            private readonly IPaymentRepository _paymentRepo;
+            private readonly IRegistrationRepository _registrationRepo;
 
-        public async Task<PaymentReadDto> ProcessPaymentAsync(PaymentCreateDto dto)
-        {
-            var registration = await _registrationRepo.GetByIdAsync(dto.RegistrationId);
-            if (registration == null)
-                throw new Exception("Registration not found.");
-
-            var payment = new Payment
+            public PaymentService(IPaymentRepository paymentRepo, IRegistrationRepository registrationRepo)
             {
-                RegistrationId = dto.RegistrationId,
-                Amount = dto.Amount,
-                PaymentMethod = dto.PaymentMethod,
-                Status = "Paid", // integrate with real payment gateway
-                PaidAt = DateTime.UtcNow
-            };
+                _paymentRepo = paymentRepo;
+                _registrationRepo = registrationRepo;
+            }
 
-            await _paymentRepo.AddAsync(payment);
-
-            // Update registration status
-            registration.Status = "Paid";
-            await _registrationRepo.UpdateAsync(registration);
-
-            return new PaymentReadDto
+            public async Task<PaymentReadDto> ProcessPaymentAsync(PaymentCreateDto dto, int currentUserId)
             {
-                Id = payment.Id,
-                EventTitle = registration.Event.Title,
-                Amount = payment.Amount,
-                Status = payment.Status,
-                PaidAt = payment.PaidAt
-            };
-        }
+                if (dto == null)
+                    throw new ValidationException("Payment data is required");
 
-        public async Task<IEnumerable<PaymentReadDto>> GetByUserAsync(int userId)
-        {
-            var payments = await _paymentRepo.GetByUserAsync(userId);
-            return payments.Select(p => new PaymentReadDto
+                if (dto.Amount <= 0)
+                    throw new ValidationException("Amount must be greater than zero");
+
+                if (string.IsNullOrWhiteSpace(dto.PaymentMethod))
+                    throw new ValidationException("Payment method is required");
+
+                var registration = await _registrationRepo.GetByIdWithEventAsync(dto.RegistrationId);
+                if (registration == null)
+                    throw new NotFoundException("Registration not found");
+
+                if (registration.AttendeeId != currentUserId)
+                    throw new ForbiddenException("You cannot pay for another user's registration");
+
+                if (registration.Status == "Paid")
+                    throw new ConflictException("This registration is already paid");
+
+                var payment = new Payment
+                {
+                    RegistrationId = dto.RegistrationId,
+                    Amount = dto.Amount,
+                    PaymentMethod = dto.PaymentMethod,
+                    Status = "Paid",
+                    PaidAt = DateTime.UtcNow
+                };
+
+                await _paymentRepo.AddAsync(payment);
+
+                registration.Status = "Paid";
+                await _registrationRepo.UpdateAsync(registration);
+
+                return new PaymentReadDto
+                {
+                    Id = payment.Id,
+                    RegistrationId = payment.RegistrationId,
+                    EventTitle = registration.Event.Title,
+                    PaymentMethod = payment.PaymentMethod,
+                    Amount = payment.Amount,
+                    Status = payment.Status,
+                    PaidAt = payment.PaidAt
+                };
+            }
+
+            public async Task<IEnumerable<PaymentReadDto>> GetByUserAsync(int userId)
             {
-                Id = p.Id,
-                EventTitle = p.Registration.Event.Title,
-                Amount = p.Amount,
-                Status = p.Status,
-                PaidAt = p.PaidAt
-            });
-        }
+                if (userId <= 0)
+                    throw new ValidationException("Invalid user ID");
 
-        public async Task<IEnumerable<PaymentReadDto>> GetByEventAsync(int eventId)
-        {
-            var payments = await _paymentRepo.GetByEventAsync(eventId);
-            return payments.Select(p => new PaymentReadDto
+                var payments = await _paymentRepo.GetByUserAsync(userId);
+                return payments.Select(p => new PaymentReadDto
+                {
+                    Id = p.Id,
+                    RegistrationId = p.RegistrationId,
+                    EventTitle = p.Registration.Event.Title,
+                    PaymentMethod = p.PaymentMethod,
+                    Amount = p.Amount,
+                    Status = p.Status,
+                    PaidAt = p.PaidAt
+                });
+            }
+
+            public async Task<IEnumerable<PaymentReadDto>> GetByEventAsync(int eventId, int currentUserId, string role)
             {
-                Id = p.Id,
-                EventTitle = p.Registration.Event.Title,
-                Amount = p.Amount,
-                Status = p.Status,
-                PaidAt = p.PaidAt
-            });
-        }
+                if (eventId <= 0)
+                    throw new ValidationException("Invalid event ID");
 
+                var payments = await _paymentRepo.GetByEventAsync(eventId);
 
-        // ========  IGenericService methods ========
-        public async Task AddAsync(PaymentReadDto dto)
-        {
-            var registration = await _registrationRepo.GetByIdAsync(dto.Id);
-            if (registration == null)
-                throw new Exception("Registration not found.");
+                if (role == Permissions.Organizer)
+                {
+                    payments = payments.Where(p => p.Registration.Event.OrganizerId == currentUserId);
+                }
 
-            var payment = new Payment
+                return payments.Select(p => new PaymentReadDto
+                {
+                    Id = p.Id,
+                    RegistrationId = p.RegistrationId,
+                    EventTitle = p.Registration.Event.Title,
+                    PaymentMethod = p.PaymentMethod,
+                    Amount = p.Amount,
+                    Status = p.Status,
+                    PaidAt = p.PaidAt
+                });
+            }
+
+            public async Task<PaymentReadDto> GetByIdAsync(int id)
             {
-                RegistrationId = dto.Id,
-                Amount = dto.Amount,
-                PaymentMethod = "Unknown",
-                Status = dto.Status,
-                PaidAt = dto.PaidAt
-            };
-            await _paymentRepo.AddAsync(payment);
-        }
+                if (id <= 0)
+                    throw new ValidationException("Invalid payment ID");
 
-        public async Task UpdateAsync(PaymentReadDto dto)
-        {
-            var payment = await _paymentRepo.GetByIdAsync(dto.Id);
-            if (payment == null)
-                throw new Exception("Payment not found.");
+                var payment = await _paymentRepo.GetByIdAsync(id);
+                if (payment == null)
+                    throw new NotFoundException($"Payment with ID {id} not found");
 
-            payment.Amount = dto.Amount;
-            payment.Status = dto.Status;
-            payment.PaidAt = dto.PaidAt;
+                return new PaymentReadDto
+                {
+                    Id = payment.Id,
+                    RegistrationId = payment.RegistrationId,
+                    EventTitle = payment.Registration.Event.Title,
+                    PaymentMethod = payment.PaymentMethod,
+                    Amount = payment.Amount,
+                    Status = payment.Status,
+                    PaidAt = payment.PaidAt
+                };
+            }
 
-            await _paymentRepo.UpdateAsync(payment);
-        }
-
-        public async Task DeleteAsync(int id)
-        {
-            await _paymentRepo.DeleteAsync(id);
-        }
-
-        public async Task<List<PaymentReadDto>> GetAllAsync()
-        {
-            var payments = await _paymentRepo.GetAllAsync();
-            return payments.Select(p => new PaymentReadDto
+            public async Task<IEnumerable<PaymentReadDto>> GetAllAsync()
             {
-                Id = p.Id,
-                EventTitle = p.Registration.Event.Title,
-                Amount = p.Amount,
-                Status = p.Status,
-                PaidAt = p.PaidAt
-            }).ToList();
+                var payments = await _paymentRepo.GetAllAsync();
+                return payments.Select(p => new PaymentReadDto
+                {
+                    Id = p.Id,
+                    RegistrationId = p.RegistrationId,
+                    EventTitle = p.Registration.Event.Title,
+                    PaymentMethod = p.PaymentMethod,
+                    Amount = p.Amount,
+                    Status = p.Status,
+                    PaidAt = p.PaidAt
+                });
+            }
         }
-
-        public async Task<PaymentReadDto> GetByIdAsync(int id)
-        {
-            var payment = await _paymentRepo.GetByIdAsync(id);
-            if (payment == null) return null;
-
-            return new PaymentReadDto
-            {
-                Id = payment.Id,
-                EventTitle = payment.Registration.Event.Title,
-                Amount = payment.Amount,
-                Status = payment.Status,
-                PaidAt = payment.PaidAt
-            };
-        }
-    }
+    
 }

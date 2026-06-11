@@ -13,8 +13,9 @@ namespace EventHub.Core.Interfaces.Services
         Task<IEnumerable<EventReadDto>> GetAllAsync();
         Task<EventReadDto> GetByIdAsync(int id);
         Task<EventReadDto> AddAsync(EventCreateDto dto, int userId);
-        Task<EventReadDto> UpdateAsync(int id, EventUpdateDto dto);
-        Task DeleteAsync(int id);
+        Task<EventReadDto> UpdateAsync(int id, EventUpdateDto dto, int userId, string role);
+        Task DeleteAsync(int id, int userId, string role);
+        Task<EventReadDto> UpdateStatusAsync(int id, string status, int userId, string role);
         Task<IEnumerable<EventReadDto>> GetEventsByUserAsync(int userId);
         Task RegisterUserToEventAsync(int eventId, int userId);
         Task UnregisterUserFromEventAsync(int eventId, int userId);

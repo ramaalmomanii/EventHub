@@ -13,6 +13,8 @@ namespace EventHub.Core.Repositories
         Task<IEnumerable<Registration>> GetByUserAsync(int userId);
         Task<IEnumerable<Registration>> GetByEventAsync(int eventId);
         Task<Registration?> GetWithDetailsAsync(int userId, int eventId);
+        Task<Registration?> GetByIdWithEventAsync(int id);
+
 
     }
 }

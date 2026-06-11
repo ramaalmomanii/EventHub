@@ -9,7 +9,7 @@ namespace EventHub.Core.Repositories
 {
     public interface ICategoryRepository : IGenericRepository<Category>
     {
-        Task<IEnumerable<Category>> GetCategoryWithEventsAsync(int categoryId);
+        Task<Category?> GetCategoryWithEventsAsync(int categoryId);
     }
 }
 

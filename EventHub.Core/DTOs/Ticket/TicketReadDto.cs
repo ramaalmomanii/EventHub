@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EventHub.Core.DTOs.Ticket
 {
-    public class TicketReadDto
+    public record TicketReadDto
     {
         public int Id { get; set; }
         public int RegistrationId { get; set; }

@@ -1,10 +1,10 @@
-﻿using EventHub.Core.DTOs.Payments;
-using EventHub.Core.Interfaces.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+﻿using EventHub.Core.Constants;
+using EventHub.Core.DTOs.Payments;
 using EventHub.Core.Exceptions;
-
-
+using EventHub.Core.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 
 namespace EventHub.API.Controllers
@@ -20,53 +20,44 @@ namespace EventHub.API.Controllers
             _paymentService = paymentService;
         }
 
+        [Authorize]
         [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> ProcessPayment([FromBody] PaymentCreateDto dto)
+        public async Task<ActionResult<PaymentReadDto>> ProcessPayment([FromBody] PaymentCreateDto dto)
         {
-            try
-            {
-                var result = await _paymentService.ProcessPaymentAsync(dto);
-                return Ok(result);
-            }
-            catch (ValidationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var userId = int.Parse(User.FindFirst("id")!.Value);
+            var result = await _paymentService.ProcessPaymentAsync(dto, userId);
+            return Ok(result);
         }
 
+        [Authorize]
+        [HttpGet("my-payments")]
+        public async Task<ActionResult<IEnumerable<PaymentReadDto>>> GetMyPayments()
+        {
+            var userId = int.Parse(User.FindFirst("id")!.Value);
+            return Ok(await _paymentService.GetByUserAsync(userId));
+        }
+
+        [Authorize(Roles = $"{Permissions.Admin}")]
         [HttpGet("user/{userId}")]
-        [Authorize]
-        public async Task<IActionResult> GetByUser(int userId)
+        public async Task<ActionResult<IEnumerable<PaymentReadDto>>> GetByUser(int userId)
         {
-            try
-            {
-                var payments = await _paymentService.GetByUserAsync(userId);
-                return Ok(payments);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            return Ok(await _paymentService.GetByUserAsync(userId));
         }
 
+        [Authorize(Roles = $"{Permissions.Admin},{Permissions.Organizer}")]
         [HttpGet("event/{eventId}")]
-        [Authorize(Roles = "Admin,Organizer")]
-        public async Task<IActionResult> GetByEvent(int eventId)
+        public async Task<ActionResult<IEnumerable<PaymentReadDto>>> GetByEvent(int eventId)
         {
-            try
-            {
-                var payments = await _paymentService.GetByEventAsync(eventId);
-                return Ok(payments);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var userId = int.Parse(User.FindFirst("id")!.Value);
+            var role = User.FindFirst(ClaimTypes.Role)!.Value;
+            return Ok(await _paymentService.GetByEventAsync(eventId, userId, role));
+        }
+
+        [Authorize(Roles = $"{Permissions.Admin}")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<PaymentReadDto>>> GetAll()
+        {
+            return Ok(await _paymentService.GetAllAsync());
         }
     }
 }

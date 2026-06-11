@@ -8,14 +8,13 @@ using System.Threading.Tasks;
 
 namespace EventHub.Core.Interfaces.Services
 {
-    public interface IRegistrationService 
+    public interface IRegistrationService
     {
-        Task<IEnumerable<RegistrationReadDto>> GetRegistrationsByUserAsync(int userId);
-
-        Task<RegistrationReadDto> RegisterAsync(RegistrationCreateDto dto,int userid);
-        Task<bool> CancelRegistrationAsync(int registrationId);
+        Task<RegistrationReadDto> RegisterAsync(RegistrationCreateDto dto, int userId);
+        Task CancelRegistrationAsync(int registrationId, int currentUserId, string role);
         Task<RegistrationReadDto?> GetByUserAndEventAsync(int userId, int eventId);
-        Task<List<RegistrationReadDto>> GetByEventAsync(int eventId);
+        Task<IEnumerable<RegistrationReadDto>> GetByEventAsync(int eventId);
+        Task<IEnumerable<RegistrationReadDto>> GetRegistrationsByUserAsync(int userId);
     }
 }
 

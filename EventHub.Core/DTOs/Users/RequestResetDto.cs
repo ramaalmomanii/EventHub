@@ -4,14 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EventHub.Core.DTOs.Registertions
+namespace EventHub.Core.DTOs.Users
 {
-    public class RegistrationCreateDto
+    public class RequestResetDto
     {
-        public int EventId { get; set; }
+        public string Email { get; set; }
     }
-
 }
-
-   
-

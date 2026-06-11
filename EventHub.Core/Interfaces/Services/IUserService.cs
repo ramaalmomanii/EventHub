@@ -11,19 +11,18 @@ namespace EventHub.Core.Interfaces.Services
 {
     public interface IUserService
     {
+        Task<IEnumerable<UserReadDto>> GetAllAsync();
+        Task<UserReadDto?> GetByIdAsync(int id);
         Task<UserReadDto?> GetByEmailAsync(string email);
         Task<IEnumerable<UserReadDto>> GetByRoleAsync(string role);
         Task<UserReadDto> RegisterAsync(UserCreateDto dto);
+        Task<UserReadDto> UpdateProfileAsync(int userId, UserUpdateDto dto);
         Task<TokenResponseDto?> LoginAsync(string email, string password);
-        Task<IEnumerable<UserReadDto>> GetAllAsync();
-
-
-
+        Task<TokenResponseDto> RefreshTokenAsync(string refreshToken);
         Task RequestPasswordResetAsync(string email);
         Task ResetPasswordAsync(string token, string newPassword);
-        Task VerifyEmailAsync(string token);
         Task<string> GenerateEmailVerificationTokenAsync(string email);
-        Task<TokenResponseDto> RefreshTokenAsync(string refreshToken);
+        Task VerifyEmailAsync(string token);
     }
 
 }

@@ -10,11 +10,11 @@ namespace EventHub.Core.Interfaces.Services
     public interface ITicketService
     {
         Task<IEnumerable<TicketReadDto>> GetAllAsync();
-        Task<TicketReadDto> GetByIdAsync(int id);
+        Task<TicketReadDto?> GetByIdAsync(int id);
         Task<IEnumerable<TicketReadDto>> GetByUserIdAsync(int userId);
         Task<TicketReadDto> CreateAsync(TicketCreateDto dto);
-        Task<TicketReadDto> UpdateAsync(TicketUpdateDto dto);
-        Task<bool> DeleteAsync(int id);
+        Task<TicketReadDto> UpdateAsync(int id, TicketUpdateDto dto);
+        Task DeleteAsync(int id);
     }
 }
 

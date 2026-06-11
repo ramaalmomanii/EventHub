@@ -3,10 +3,14 @@
 
   <div class="user-avatar" (click)="toggleDropdown()">
     <img src="assets/imgs/avatar.png" alt="Avatar" class="avatar-img" />
-    <div class="dropdown" *ngIf="showDropdown">
+
+    @if (dropdownOpen) {
+    <div class="dropdown">
       <ul>
-        <li *ngFor="let item of userMenuItems" (click)="item.command?.()">{{item.label}}</li>
+        @for (item of userMenuItems; track item.label) {
+        <li (click)="item.command()">{{item.label}}</li>        }
       </ul>
     </div>
+    }
   </div>
 </header>

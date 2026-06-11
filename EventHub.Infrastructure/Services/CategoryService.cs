@@ -15,11 +15,11 @@ namespace EventHub.Infrastructure.Services
 {
     public class CategoryService : ICategoryService
     {
-        private readonly IGenericRepository<Category> _repository;
+        private readonly ICategoryRepository _repository;
         private readonly IMapper _mapper;
 
 
-        public CategoryService(IGenericRepository<Category> repository, IMapper mapper)
+        public CategoryService(ICategoryRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;

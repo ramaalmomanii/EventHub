@@ -8,8 +8,7 @@ namespace EventHub.Core.DTOs.Categories
 {
     public class CategoryCreateDto
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string? Name { get; set; }
+        public string? Description { get; set; }
     }
 }

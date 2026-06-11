@@ -32,9 +32,19 @@ namespace EventHub.Infrastructure.Repositories
         {
             return await _context.Tickets
                 .Include(t => t.Event)
+                .Include(t => t.Attendee)
                 .Where(t => t.UserId == userId)
                 .ToListAsync();
         }
+
+        public override async Task<Ticket?> GetByIdAsync(int id)
+        {
+            return await _context.Tickets
+                .Include(t => t.Attendee)
+                .Include(t => t.Event)
+                .FirstOrDefaultAsync(t => t.Id == id);
+        }
+
 
         // Get ticket with event + user (full details)
         public async Task<Ticket?> GetWithDetailsAsync(int ticketId)

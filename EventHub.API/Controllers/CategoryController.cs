@@ -1,9 +1,10 @@
-﻿using EventHub.Core.DTOs;
+﻿using EventHub.Core.Constants;
+using EventHub.Core.DTOs;
 using EventHub.Core.DTOs.Categories;
-using EventHub.Core.Interfaces.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using EventHub.Core.Exceptions;
+using EventHub.Core.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EventHub.API.Controllers
 {
@@ -19,84 +20,42 @@ namespace EventHub.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Permissions.Admin)]
         public async Task<ActionResult<IEnumerable<CategoryReadDto>>> GetAll()
         {
             return Ok(await _service.GetAllAsync());
         }
 
         [HttpGet("{id}")]
+        [Authorize(Permissions.Admin)]
         public async Task<ActionResult<CategoryReadDto>> GetById(int id)
         {
-            try
-            {
-                var category = await _service.GetByIdAsync(id);
-                if (category == null) 
-                    return NotFound(new { message = "Category not found" });
-                return Ok(category);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            return Ok(await _service.GetByIdAsync(id));
         }
 
-        [Authorize(Roles = "Admin")]
+        
         [HttpPost]
+        [Authorize(Permissions.Admin)]
         public async Task<ActionResult<CategoryReadDto>> Create([FromBody] CategoryCreateDto dto)
         {
-            try
-            {
-                var created = await _service.AddAsync(dto);
-                return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
-            }
-            catch (ValidationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var created = await _service.AddAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
+        [Authorize(Permissions.Admin)]
         public async Task<ActionResult<CategoryReadDto>> Update(int id, [FromBody] CategoryUpdateDto dto)
         {
-            try
-            {
-                var updated = await _service.UpdateAsync(id, dto);
-                if (updated == null) 
-                    return NotFound(new { message = "Category not found" });
-                return Ok(updated);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var updated = await _service.UpdateAsync(id, dto);
+            return Ok(updated);
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
+        [Authorize(Permissions.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                await _service.DeleteAsync(id);
-                return NoContent();
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            await _service.DeleteAsync(id);
+            return NoContent();
         }
     }
 }

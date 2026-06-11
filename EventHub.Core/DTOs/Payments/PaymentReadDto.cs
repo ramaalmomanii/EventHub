@@ -9,7 +9,9 @@ namespace EventHub.Core.DTOs.Payments
     public class PaymentReadDto
     {
         public int Id { get; set; }
+        public int RegistrationId { get; set; }  
         public string EventTitle { get; set; }
+        public string PaymentMethod { get; set; } 
         public decimal Amount { get; set; }
         public string Status { get; set; }
         public DateTime? PaidAt { get; set; }

@@ -1,3 +1,4 @@
+using EventHub.Core.Exceptions;
 using System.Net;
 using System.Text.Json;
 
@@ -30,25 +31,28 @@ namespace EventHub.API.Middleware
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var code = HttpStatusCode.InternalServerError;
-            var message = "An error occurred while processing your request.";
-
+            var message = "An unexpected error occurred.";
             switch (exception)
             {
-                case ApplicationException appEx:
+                case ValidationException valEx:
                     code = HttpStatusCode.BadRequest;
-                    message = appEx.Message;
+                    message = valEx.Message;
+                    break;
+                case NotFoundException notFoundEx:
+                    code = HttpStatusCode.NotFound;
+                    message = notFoundEx.Message;
                     break;
                 case UnauthorizedAccessException:
                     code = HttpStatusCode.Unauthorized;
                     message = "You are not authorized to perform this action.";
                     break;
-                case KeyNotFoundException:
-                    code = HttpStatusCode.NotFound;
-                    message = "The requested resource was not found.";
-                    break;
-                case ArgumentException:
-                    code = HttpStatusCode.BadRequest;
+                case ForbiddenException:
+                    code = HttpStatusCode.Forbidden;
                     message = exception.Message;
+                    break;
+                default:
+                    code = HttpStatusCode.InternalServerError;
+                    message = "An unexpected error occurred.";
                     break;
             }
 

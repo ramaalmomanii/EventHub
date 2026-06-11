@@ -1,5 +1,5 @@
 <div class="profile-container" *ngIf="user()">
-  <!-- الجزء العلوي: Avatar + الاسم + دور المستخدم -->
+  <!--  Avatar  -->
   <div class="profile-header">
     <div class="avatar">
       <img src="assets/avatar-placeholder.png" alt="User Avatar">
@@ -11,9 +11,17 @@
     </div>
   </div>
 
-  <!-- الجزء السفلي: Events -->
+  <!--  Events -->
   <div class="profile-events">
-    <h3>الأحداث المسجلة</h3>
+    <h3>Recorded events</h3>
+    <table>
+      <thead>
+        <tr> tt</tr>
+      </thead>
+      <tbody>
+        <tr> tt</tr>
+      </tbody>
+    </table>
     <ul>
       <li *ngFor="let event of user().events">{{ event.name }} - {{ event.date | date }}</li>
     </ul>

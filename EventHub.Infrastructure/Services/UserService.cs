@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
+using EventHub.Core.Constants;
 using EventHub.Core.DTOs;
 using EventHub.Core.DTOs.Users;
 using EventHub.Core.Entities;
+using EventHub.Core.Exceptions;
 using EventHub.Core.Interfaces;
 using EventHub.Core.Interfaces.Services;
 using EventHub.Core.Repositories;
 using EventHub.Infrastructure.Helpers;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Org.BouncyCastle.Crypto.Generators;
@@ -17,8 +20,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using EventHub.Core.Exceptions;
 
 
 
@@ -28,16 +29,19 @@ namespace EventHub.Infrastructure.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        private readonly JwtTokenGenerator _jwtTokenGenerator; 
+        private readonly JwtTokenGenerator _jwtTokenGenerator;
+        private readonly IEmailService _emailService;
 
-
-
-        public UserService(IUserRepository userRepository, IMapper mapper, JwtTokenGenerator jwtTokenGenerator) 
+        public UserService(
+            IUserRepository userRepository,
+            IMapper mapper,
+            JwtTokenGenerator jwtTokenGenerator,
+            IEmailService emailService)
         {
             _userRepository = userRepository;
             _mapper = mapper;
-            _jwtTokenGenerator = jwtTokenGenerator; 
-
+            _jwtTokenGenerator = jwtTokenGenerator;
+            _emailService = emailService;
         }
 
         public async Task<IEnumerable<UserReadDto>> GetAllAsync()
@@ -46,59 +50,13 @@ namespace EventHub.Infrastructure.Services
             return _mapper.Map<IEnumerable<UserReadDto>>(users);
         }
 
-
-        public async Task<UserReadDto> RegisterAsync(UserCreateDto dto)
+        public async Task<UserReadDto?> GetByIdAsync(int id)
         {
-            if (dto == null)
-                throw new ValidationException("User data is required");
+            if (id <= 0)
+                throw new ValidationException("Invalid user ID");
 
-            if (string.IsNullOrWhiteSpace(dto.Email))
-                throw new ValidationException("Email is required");
-
-            if (string.IsNullOrWhiteSpace(dto.Password))
-                throw new ValidationException("Password is required");
-
-            if (string.IsNullOrWhiteSpace(dto.FullName))
-                throw new ValidationException("Full name is required");
-
-            var existingUser = await _userRepository.GetByEmailAsync(dto.Email);
-            if (existingUser != null)
-            {
-                throw new ConflictException("Email already exists");
-            }
-
-            var user = _mapper.Map<User>(dto);
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-            user.Role = "Attendee";
-            user.Status = "Active";
-            user.FullName = dto.FullName;
-            user.CreatedAt = DateTime.UtcNow;
-            user.UpdatedAt = DateTime.UtcNow;
-            await _userRepository.AddAsync(user);
-            return _mapper.Map<UserReadDto>(user);
-        }
-
-        public async Task<TokenResponseDto?> LoginAsync(string email, string password)
-        {
-            var user = await _userRepository.GetByEmailAsync(email);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
-                return null;
-
-            var accessToken = _jwtTokenGenerator.GenerateToken(user);
-            var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
-            var refreshTokenExpires = _jwtTokenGenerator.GetRefreshTokenExpiry();
-
-            // Save refresh token to user
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpires = refreshTokenExpires;
-            await _userRepository.UpdateAsync(user);
-
-            return new TokenResponseDto
-            {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken,
-                ExpiresAt = refreshTokenExpires
-            };
+            var user = await _userRepository.GetByIdAsync(id);
+            return user == null ? null : _mapper.Map<UserReadDto>(user);
         }
 
         public async Task<UserReadDto?> GetByEmailAsync(string email)
@@ -113,73 +71,73 @@ namespace EventHub.Infrastructure.Services
             return _mapper.Map<IEnumerable<UserReadDto>>(users);
         }
 
-
-        public async Task RequestPasswordResetAsync(string email)
+        public async Task<UserReadDto> RegisterAsync(UserCreateDto dto)
         {
-            if (string.IsNullOrWhiteSpace(email))
+            if (dto == null)
+                throw new ValidationException("User data is required");
+
+            if (string.IsNullOrWhiteSpace(dto.FullName))
+                throw new ValidationException("Full name is required");
+
+            if (string.IsNullOrWhiteSpace(dto.Email))
                 throw new ValidationException("Email is required");
 
-            var user = await _userRepository.GetByEmailAsync(email);
+            if (string.IsNullOrWhiteSpace(dto.Password))
+                throw new ValidationException("Password is required");
+
+            var existing = await _userRepository.GetByEmailAsync(dto.Email);
+            if (existing != null)
+                throw new ConflictException("Email already exists");
+
+            var user = _mapper.Map<User>(dto);
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+            user.Role = Permissions.Attendee;
+            user.Status = "Active";
+            user.CreatedAt = DateTime.UtcNow;
+
+            await _userRepository.AddAsync(user);
+            return _mapper.Map<UserReadDto>(user);
+        }
+
+        public async Task<UserReadDto> UpdateProfileAsync(int userId, UserUpdateDto dto)
+        {
+            if (dto == null)
+                throw new ValidationException("Update data is required");
+
+            var user = await _userRepository.GetByIdAsync(userId);
             if (user == null)
                 throw new NotFoundException("User not found");
 
-            var resetToken = Guid.NewGuid().ToString();
-            user.ResetToken = resetToken;
-            user.ResetTokenExpires = DateTime.UtcNow.AddHours(1);
-            await _userRepository.UpdateAsync(user);
+            if (!string.IsNullOrWhiteSpace(dto.FullName))
+                user.FullName = dto.FullName;
 
-            // TODO: Send email with reset token
+            await _userRepository.UpdateAsync(user);
+            return _mapper.Map<UserReadDto>(user);
         }
 
-        public async Task ResetPasswordAsync(string token, string newPassword)
+        public async Task<TokenResponseDto?> LoginAsync(string email, string password)
         {
-            if (string.IsNullOrWhiteSpace(token))
-                throw new ValidationException("Token is required");
-
-            if (string.IsNullOrWhiteSpace(newPassword))
-                throw new ValidationException("New password is required");
-
-            var user = await _userRepository.GetByResetTokenAsync(token);
-            if (user == null || user.ResetTokenExpires < DateTime.UtcNow)
-                throw new UnauthorizedException("Invalid or expired token");
-
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
-            user.ResetToken = null;
-            user.ResetTokenExpires = null;
-            await _userRepository.UpdateAsync(user);
-        }
-
-
-
-        public async Task<string> GenerateEmailVerificationTokenAsync(string email)
-        {
-            if (string.IsNullOrWhiteSpace(email))
-                throw new ValidationException("Email is required");
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                throw new ValidationException("Email and password are required");
 
             var user = await _userRepository.GetByEmailAsync(email);
-            if (user == null)
-                throw new NotFoundException("User not found");
+            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+                return null;
 
-            var token = Guid.NewGuid().ToString();
-            user.VerificationToken = token;
-            user.VerifiedAt = null;
+            var accessToken = _jwtTokenGenerator.GenerateToken(user);
+            var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
+            var refreshTokenExpires = _jwtTokenGenerator.GetRefreshTokenExpiry();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpires = refreshTokenExpires;
             await _userRepository.UpdateAsync(user);
 
-            return token;
-        }
-
-        public async Task VerifyEmailAsync(string token)
-        {
-            if (string.IsNullOrWhiteSpace(token))
-                throw new ValidationException("Token is required");
-
-            var user = await _userRepository.GetByVerificationTokenAsync(token);
-            if (user == null)
-                throw new UnauthorizedException("Invalid verification token");
-
-            user.VerifiedAt = DateTime.UtcNow;
-            user.VerificationToken = null;
-            await _userRepository.UpdateAsync(user);
+            return new TokenResponseDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                ExpiresAt = refreshTokenExpires
+            };
         }
 
         public async Task<TokenResponseDto> RefreshTokenAsync(string refreshToken)
@@ -207,6 +165,79 @@ namespace EventHub.Infrastructure.Services
             };
         }
 
+        public async Task RequestPasswordResetAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ValidationException("Email is required");
+
+            var user = await _userRepository.GetByEmailAsync(email);
+            if (user == null)
+                throw new NotFoundException("User not found");
+
+            user.ResetToken = Guid.NewGuid().ToString();
+            user.ResetTokenExpires = DateTime.UtcNow.AddHours(1);
+            await _userRepository.UpdateAsync(user);
+
+            await _emailService.SendAsync(
+                user.Email,
+                "Password Reset",
+                $"Your reset token: {user.ResetToken}"
+            );
+        }
+
+        public async Task ResetPasswordAsync(string token, string newPassword)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                throw new ValidationException("Token is required");
+
+            if (string.IsNullOrWhiteSpace(newPassword))
+                throw new ValidationException("New password is required");
+
+            var user = await _userRepository.GetByResetTokenAsync(token);
+            if (user == null || user.ResetTokenExpires < DateTime.UtcNow)
+                throw new UnauthorizedException("Invalid or expired token");
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            user.ResetToken = null;
+            user.ResetTokenExpires = null;
+            await _userRepository.UpdateAsync(user);
+        }
+
+        public async Task<string> GenerateEmailVerificationTokenAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ValidationException("Email is required");
+
+            var user = await _userRepository.GetByEmailAsync(email);
+            if (user == null)
+                throw new NotFoundException("User not found");
+
+            var token = Guid.NewGuid().ToString();
+            user.VerificationToken = token;
+            await _userRepository.UpdateAsync(user);
+
+            await _emailService.SendAsync(
+                user.Email,
+                "Verify Your Email",
+                $"Your verification token: {token}"
+            );
+
+            return token;
+        }
+
+        public async Task VerifyEmailAsync(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                throw new ValidationException("Token is required");
+
+            var user = await _userRepository.GetByVerificationTokenAsync(token);
+            if (user == null)
+                throw new UnauthorizedException("Invalid verification token");
+
+            user.VerifiedAt = DateTime.UtcNow;
+            user.VerificationToken = null;
+            await _userRepository.UpdateAsync(user);
+        }
     }
 
 }

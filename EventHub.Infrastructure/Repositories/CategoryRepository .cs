@@ -19,12 +19,11 @@ namespace EventHub.Infrastructure.Repositories
             _context = context;
         }
         //get all categories with their related events as a collection
-        public async Task<IEnumerable<Category>> GetCategoryWithEventsAsync(int categoryId)
+        public async Task<Category?> GetCategoryWithEventsAsync(int categoryId)
         {
             return await _context.Categories
-            .Include(c => c.Events)
-            .Where(c => c.Id == categoryId)
-            .ToListAsync();
+              .Include(c => c.Events)
+              .FirstOrDefaultAsync(c => c.Id == categoryId);
 
         }
 

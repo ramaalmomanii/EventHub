@@ -59,7 +59,12 @@ namespace EventHub.Infrastructure.Repositories
         }
 
 
-
+        public async Task<Registration?> GetByIdWithEventAsync(int id)
+        {
+            return await _context.Registrations
+                .Include(r => r.Event)
+                .FirstOrDefaultAsync(r => r.Id == id);
+        }
 
     }
 

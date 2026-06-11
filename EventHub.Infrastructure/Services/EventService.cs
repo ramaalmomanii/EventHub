@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
+using EventHub.Core.Constants;
 using EventHub.Core.DTOs;
 using EventHub.Core.DTOs.Events;
 using EventHub.Core.Entities;
+using EventHub.Core.Exceptions;
 using EventHub.Core.Interfaces.Services;
 using EventHub.Core.Repositories;
-using EventHub.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,19 +16,17 @@ namespace EventHub.Infrastructure.Services
 {
     public class EventService : IEventService
     {
-        private readonly IGenericRepository<EEvent> _repository;
+        private readonly IEventRepository _repository;
+        private readonly IRegistrationRepository _registrationRepository;
         private readonly IMapper _mapper;
-        private readonly IGenericRepository<Registration> _registrationRepository;
-
-
 
         public EventService(
-       IRegistrationRepository registrationRepository,
-       IEventRepository repository,
-       IMapper mapper)
+            IEventRepository repository,
+            IRegistrationRepository registrationRepository,
+            IMapper mapper)
         {
-            _registrationRepository = registrationRepository ?? throw new ArgumentNullException(nameof(registrationRepository));
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _registrationRepository = registrationRepository ?? throw new ArgumentNullException(nameof(registrationRepository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
@@ -68,12 +67,12 @@ namespace EventHub.Infrastructure.Services
             ev.CreatedAt = DateTime.UtcNow;
             ev.AvailableSeats = dto.Capacity;
             ev.Status = "Pending";
-            
+
             await _repository.AddAsync(ev);
             return _mapper.Map<EventReadDto>(ev);
         }
 
-        public async Task<EventReadDto> UpdateAsync(int id, EventUpdateDto dto)
+        public async Task<EventReadDto> UpdateAsync(int id, EventUpdateDto dto, int currentUserId, string role)
         {
             if (id <= 0)
                 throw new ValidationException("Invalid event ID");
@@ -85,13 +84,34 @@ namespace EventHub.Infrastructure.Services
             if (existing == null)
                 throw new NotFoundException($"Event with ID {id} not found");
 
+            if (role == Permissions.Organizer && existing.OrganizerId != currentUserId)
+                throw new ForbiddenException("You cannot update events created by other organizers");
+
+            if (dto.StartDate < DateTime.UtcNow)
+                throw new ValidationException("Start date cannot be in the past");
+
+            if (dto.EndDate <= dto.StartDate)
+                throw new ValidationException("End date must be after start date");
+
+            if (dto.Capacity <= 0)
+                throw new ValidationException("Capacity must be greater than zero");
+
+            if (dto.Capacity != existing.Capacity)
+            {
+                var registeredCount = existing.Capacity - existing.AvailableSeats;
+                if (dto.Capacity < registeredCount)
+                    throw new ValidationException("New capacity cannot be less than the number of registered attendees");
+
+                existing.AvailableSeats = dto.Capacity - registeredCount;
+            }
+
             _mapper.Map(dto, existing);
             await _repository.UpdateAsync(existing);
 
             return _mapper.Map<EventReadDto>(existing);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id, int currentUserId, string role)
         {
             if (id <= 0)
                 throw new ValidationException("Invalid event ID");
@@ -100,24 +120,41 @@ namespace EventHub.Infrastructure.Services
             if (existing == null)
                 throw new NotFoundException($"Event with ID {id} not found");
 
+            if (role == Permissions.Organizer && existing.OrganizerId != currentUserId)
+                throw new ForbiddenException("You cannot delete events created by other organizers");
+
             await _repository.DeleteAsync(id);
         }
 
-
-     
         public async Task<IEnumerable<EventReadDto>> GetEventsByUserAsync(int userId)
         {
-            var registrations = await _registrationRepository.FindAsync(r => r.AttendeeId == userId);
+            if (userId <= 0)
+                throw new ValidationException("Invalid user ID");
 
-            if (registrations == null || !registrations.Any())
-                return new List<EventReadDto>();
-
-
-            var eventIds = registrations.Select(r => r.EventId).ToList();
-
-            var events = await _repository.FindAsync(e => eventIds.Contains(e.Id));
-
+            var events = await _repository.GetByOrganizerAsync(userId);
             return _mapper.Map<IEnumerable<EventReadDto>>(events);
+        }
+
+        public async Task<EventReadDto> UpdateStatusAsync(int id, string status, int currentUserId, string role)
+        {
+            if (id <= 0)
+                throw new ValidationException("Invalid event ID");
+
+            var validStatuses = new[] { "Pending", "Upcoming", "Ongoing", "Completed", "Cancelled" };
+            if (!validStatuses.Contains(status))
+                throw new ValidationException($"Invalid status. Valid values: {string.Join(", ", validStatuses)}");
+
+            var existing = await _repository.GetByIdAsync(id);
+            if (existing == null)
+                throw new NotFoundException($"Event with ID {id} not found");
+
+            if (role == Permissions.Organizer && existing.OrganizerId != currentUserId)
+                throw new ForbiddenException("You cannot update status of events created by other organizers");
+
+            existing.Status = status;
+            await _repository.UpdateAsync(existing);
+
+            return _mapper.Map<EventReadDto>(existing);
         }
 
         public async Task RegisterUserToEventAsync(int eventId, int userId)
@@ -132,6 +169,9 @@ namespace EventHub.Infrastructure.Services
             if (ev == null)
                 throw new NotFoundException($"Event with ID {eventId} not found");
 
+            if (ev.Status != "Upcoming")
+                throw new ValidationException("Cannot register to an event that is not upcoming");
+
             if (ev.AvailableSeats <= 0)
                 throw new ConflictException("Event is full");
 
@@ -139,15 +179,15 @@ namespace EventHub.Infrastructure.Services
             if (existing.Any())
                 throw new ConflictException("User is already registered for this event");
 
-            var registration = new Registration 
-            { 
-                EventId = eventId, 
-                AttendeeId = userId, 
-                RegistrationDate = DateTime.UtcNow 
+            var registration = new Registration
+            {
+                EventId = eventId,
+                AttendeeId = userId,
+                RegistrationDate = DateTime.UtcNow
             };
+
             await _registrationRepository.AddAsync(registration);
 
-            // Update available seats
             ev.AvailableSeats--;
             await _repository.UpdateAsync(ev);
         }
@@ -160,13 +200,14 @@ namespace EventHub.Infrastructure.Services
             if (userId <= 0)
                 throw new ValidationException("Invalid user ID");
 
-            var registration = (await _registrationRepository.FindAsync(r => r.EventId == eventId && r.AttendeeId == userId)).FirstOrDefault();
+            var registration = (await _registrationRepository.FindAsync(
+                r => r.EventId == eventId && r.AttendeeId == userId)).FirstOrDefault();
+
             if (registration == null)
                 throw new NotFoundException("Registration not found");
 
             await _registrationRepository.DeleteAsync(registration.Id);
 
-            // Update available seats
             var ev = await _repository.GetByIdAsync(eventId);
             if (ev != null)
             {
