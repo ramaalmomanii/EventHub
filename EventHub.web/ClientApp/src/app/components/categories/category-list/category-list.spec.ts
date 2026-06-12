@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EventList } from './event-list';
+import { CategoryList } from './category-list';
 
-describe('EventList', () => {
-  let component: EventList;
-  let fixture: ComponentFixture<EventList>;
+describe('CategoryList', () => {
+  let component: CategoryList;
+  let fixture: ComponentFixture<CategoryList>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EventList]
+      imports: [CategoryList]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(EventList);
+    fixture = TestBed.createComponent(CategoryList);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

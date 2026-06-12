@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service'; 
 import { Router } from '@angular/router';
+import { Footer } from '../layout/footer/footer';
 
 @Component({
   standalone: true,
   selector: 'app-register',
   templateUrl: './register.html',
   styleUrl: './register.scss',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule] 
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, Footer] 
 })
 export class Register {
   registerForm: FormGroup;

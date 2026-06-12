@@ -8,6 +8,7 @@
   font-family: 'Arial', sans-serif;
   padding: 20px;
   box-sizing: border-box;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
 
@@ -18,9 +19,10 @@
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
   width: 380px;
   text-align: center;
-
+  backdrop-filter: blur(10px); 
+  border: 1px solid rgba(255, 255, 255, 0.3);
   position: relative;
-  margin-bottom: 30px; 
+  margin-bottom: 30px;
 }
 
 /* زر الرجوع */
@@ -102,12 +104,7 @@
 .login-card a:hover {
   text-decoration: underline;
 }
-/* Footer */
-.login-footer {
+app-footer {
+  width: 100%;
   margin-top: auto; 
-  padding: 15px 0;
-  text-align: center;
-  color: #fff;
-  font-size: 14px;
-  opacity: 0.9;
 }

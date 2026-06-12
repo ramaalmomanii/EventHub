@@ -1,10 +1,10 @@
 <div class="login-container">
   <div class="login-card">
     <!-- زر رجوع -->
-    <button class="back-btn" routerLink="/register">⬅ إنشاء حساب</button>
+    <!--<button class="back-btn" routerLink="/register">⬅ إنشاء حساب</button>-->
 
     <h1> EventHub مرحبا بك في </h1>
-    <p>سجّل الدخول لتجربة خيالية ومميزة ✨</p>
+    <p>سجّل الدخول لتجربة خيالية ومميزة</p>
 
     <form (ngSubmit)="onSubmit()">
       <input type="email"
@@ -17,16 +17,13 @@
              name="password"
              placeholder="كلمة المرور"
              required />
-      <button type="submit">🚀 دخول</button>
+      <button type="submit" [disabled]="isLoading"> دخول</button>
     </form>
 
     <p class="register-text">
-      ما عندك حساب؟ <a [routerLink]="['/register']">سجّل الآن</a>
+     <a [routerLink]="['/register']">سجّل الآن</a>
     </p>
   </div>
-  <!-- Footer -->
-  <footer class="login-footer">
-    <p>© 2025 EventHub | جميع الحقوق محفوظة</p>
-  </footer>
 
 </div>
+<app-footer></app-footer>

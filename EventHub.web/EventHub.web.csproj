@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="ClientApp\src\app\components\layout\" />
     <Folder Include="ClientApp\src\app\components\user-list\" />
-    <Folder Include="ClientApp\src\app\components\profile\" />
     <Folder Include="ClientApp\src\assets\" />
   </ItemGroup>
 

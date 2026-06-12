@@ -1,55 +1,58 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { Observable, tap } from 'rxjs';
+import { LoginDto } from '../models/user';
+import {  RegisterDto, TokenResponse, User, UpdateProfileDto } from '../models/user';
 
-
-export interface RegisterDto {
-  fullName: string;
-  email: string;
-  password: string;
-  role: string;
-}
-export interface LoginDto {
-  email: string;
-  password: string;
-}
-export interface UserProfile {
-  fullName: string;
-  email: string;
-  role: string;
-}
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
+  private http = inject(HttpClient);
+  private router = inject(Router);
   private apiUrl = 'https://localhost:44370/api/user';
-  constructor(private http: HttpClient) { }
 
-  // Register a new user
-  register(dto: RegisterDto): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, dto);
-
-  }
-  // Login a user
-  login(dto: LoginDto): Observable<{ accessToken: string; refreshToken: string }> {
-    return this.http.post<{ accessToken: string; refreshToken: string }>(`${this.apiUrl}/login`, dto);
-  }
-  // get user profile
-  getMyProfile(): Observable<UserProfile> {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
-    });
-    return this.http.get<UserProfile>(`${this.apiUrl}/me`, { headers });
+  register(dto: RegisterDto): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/register`, dto);
   }
 
-  // get all users >>> admin
-  getAllUsers(): Observable<UserProfile[]> {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
-    });
-    return this.http.get<UserProfile[]>(`${this.apiUrl}/user`, { headers });
+  login(dto: LoginDto): Observable<TokenResponse> {
+    return this.http.post<TokenResponse>(`${this.apiUrl}/login`, dto).pipe(
+      tap(res => {
+        localStorage.setItem('token', res.accessToken);
+        localStorage.setItem('refreshToken', res.refreshToken);
+      })
+    );
   }
+
+  logout(): void {
+    localStorage.clear();
+    this.router.navigate(['/login']);
+  }
+
+  getMyProfile(): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/me`).pipe(
+      tap(user => localStorage.setItem('user', JSON.stringify(user)))
+    );
+  }
+
+  updateProfile(dto: UpdateProfileDto): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/me`, dto);
+  }
+
+  getCurrentUser(): User | null {
+    const userStr = localStorage.getItem('user');
+    return userStr ? JSON.parse(userStr) : null;
+  }
+
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('token');
+  }
+
+  getRole(): string {
+    return this.getCurrentUser()?.role ?? '';
+  }
+
+  isAdmin(): boolean { return this.getRole() === 'Admin'; }
+  isOrganizer(): boolean { return this.getRole() === 'Organizer'; }
+  isAttendee(): boolean { return this.getRole() === 'Attendee'; }
 }
