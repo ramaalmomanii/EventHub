@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
 import { roleGuard } from './guards/role-guard';
+import { MainLayout } from './components/layout/main-layout/main-layout';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -18,6 +19,7 @@ export const routes: Routes = [
   // Protected
   {
     path: '',
+    component: MainLayout,
     canActivate: [authGuard],
     children: [
       {
@@ -44,16 +46,12 @@ export const routes: Routes = [
         path: 'my-registrations',
         loadComponent: () => import('./components/registrations/my-registrations/my-registrations').then(m => m.MyRegistrations)
       },
-
-      // Organizer + Admin
       {
         path: 'events/create',
         canActivate: [roleGuard],
         data: { roles: ['Admin', 'Organizer'] },
         loadComponent: () => import('./components/events/event-form/event-form').then(m => m.EventForm)
       },
-
-      // Admin only
       {
         path: 'admin/users',
         canActivate: [roleGuard],

@@ -1,1 +1,57 @@
-<p>sidebar works!</p>
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <i class="ti ti-calendar-event" aria-hidden="true"></i>
+    EventHub
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <span class="nav-label"></span>
+      @for (item of mainItems; track item.route) {
+      <a [routerLink]="item.route" routerLinkActive="active" class="nav-item">
+        <i class="ti {{item.icon}}" aria-hidden="true"></i>
+        {{ item.label }}
+      </a>
+      }
+    </div>
+
+    @if (organizerItems.length > 0) {
+    <div class="nav-section">
+      <span class="nav-label"></span>
+      @for (item of organizerItems; track item.route) {
+      <a [routerLink]="item.route" routerLinkActive="active" class="nav-item">
+        <i class="ti {{item.icon}}" aria-hidden="true"></i>
+        {{ item.label }}
+      </a>
+      }
+    </div>
+    }
+
+    @if (adminItems.length > 0) {
+    <div class="nav-section">
+      <span class="nav-label"></span>
+      @for (item of adminItems; track item.route) {
+      <a [routerLink]="item.route" routerLinkActive="active" class="nav-item">
+        <i class="ti {{item.icon}}" aria-hidden="true"></i>
+        {{ item.label }}
+      </a>
+      }
+    </div>
+    }
+  </nav>
+
+  <div class="sidebar-user">
+    <div class="user-mini" [routerLink]="'/profile'">
+      <div class="avatar">{{ initials }}</div>
+      <div class="user-info">
+        <div class="user-name">{{ currentUser?.fullName ?? 'Loading...' }}</div>
+        <div class="user-role">{{ currentUser?.role ?? '' }}</div>
+      </div>
+      <i class="ti ti-chevron-right" aria-hidden="true"></i>
+    </div>
+    <button class="logout-btn" (click)="logout()">
+      <i class="ti ti-logout" aria-hidden="true"></i>
+      Logout
+    </button>
+  </div>
+</aside>
