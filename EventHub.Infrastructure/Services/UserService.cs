@@ -115,6 +115,52 @@ namespace EventHub.Infrastructure.Services
             return _mapper.Map<UserReadDto>(user);
         }
 
+        public async Task<UserReadDto> CreateUserAsync(AdminCreateUserDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Email))
+                throw new ValidationException("Email is required");
+
+            var existing = await _userRepository.GetByEmailAsync(dto.Email);
+            if (existing != null)
+                throw new ConflictException("Email already exists");
+
+            var user = new User
+            {
+                FullName = dto.FullName,
+                Email = dto.Email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                Role = dto.Role,
+                Status = "Active",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _userRepository.AddAsync(user);
+            return _mapper.Map<UserReadDto>(user);
+        }
+
+        public async Task<UserReadDto> UpdateUserAsync(int id, AdminUpdateUserDto dto)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user == null)
+                throw new NotFoundException("User not found");
+
+            user.FullName = dto.FullName;
+            user.Role = dto.Role;
+            user.Status = dto.Status;
+
+            await _userRepository.UpdateAsync(user);
+            return _mapper.Map<UserReadDto>(user);
+        }
+
+        public async Task DeleteUserAsync(int id)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user == null)
+                throw new NotFoundException("User not found");
+
+            await _userRepository.DeleteAsync(id);
+        }
+
         public async Task<TokenResponseDto?> LoginAsync(string email, string password)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))

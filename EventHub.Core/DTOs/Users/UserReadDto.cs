@@ -14,4 +14,6 @@ namespace EventHub.Core.DTOs.Users
         public string Role { get; set; }
         public string Status { get; set; }
     }
+
+
 }

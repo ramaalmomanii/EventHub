@@ -11,4 +11,11 @@ namespace EventHub.Core.DTOs.Users
         public string FullName { get; set; }
         public string Status { get; set; }
     }
+
+    public class AdminUpdateUserDto
+    {
+        public string FullName { get; set; }
+        public string Role { get; set; }
+        public string Status { get; set; }
+    }
 }

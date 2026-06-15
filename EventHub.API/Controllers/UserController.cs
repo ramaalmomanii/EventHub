@@ -122,6 +122,31 @@ namespace EventHub.API.Controllers
             await _userService.VerifyEmailAsync(token);
             return Ok(new { message = "Email verified successfully" });
         }
+
+        [Authorize(Roles = $"{Permissions.Admin}")]
+        [HttpPost]
+        public async Task<ActionResult<UserReadDto>> CreateUser([FromBody] AdminCreateUserDto dto)
+        {
+            var user = await _userService.CreateUserAsync(dto);
+            return Ok(user);
+        }
+
+        [Authorize(Roles = $"{Permissions.Admin}")]
+        [HttpPut("{id}")]
+        public async Task<ActionResult<UserReadDto>> UpdateUser(int id, [FromBody] AdminUpdateUserDto dto)
+        {
+            var user = await _userService.UpdateUserAsync(id, dto);
+            return Ok(user);
+        }
+
+        [Authorize(Roles = $"{Permissions.Admin}")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            await _userService.DeleteUserAsync(id);
+            return NoContent();
+        }
+
     }
 
 }

@@ -23,6 +23,9 @@ namespace EventHub.Core.Interfaces.Services
         Task ResetPasswordAsync(string token, string newPassword);
         Task<string> GenerateEmailVerificationTokenAsync(string email);
         Task VerifyEmailAsync(string token);
+        Task<UserReadDto> CreateUserAsync(AdminCreateUserDto dto);
+        Task<UserReadDto> UpdateUserAsync(int id, AdminUpdateUserDto dto);
+        Task DeleteUserAsync(int id);
     }
 
 }

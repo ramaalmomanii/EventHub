@@ -26,3 +26,16 @@ export interface TokenResponse {
 export interface UpdateProfileDto {
   fullName: string;
 }
+
+export interface AdminCreateUserDto {
+  fullName: string;
+  email: string;
+  password: string;
+  role: string;
+}
+
+export interface AdminUpdateUserDto {
+  fullName: string;
+  role: string;
+  status: string;
+}
