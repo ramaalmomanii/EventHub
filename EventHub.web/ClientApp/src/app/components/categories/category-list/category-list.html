@@ -1,1 +1,80 @@
-<p>category-list works!</p>
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Categories</h2>
+    <p class="page-sub">Manage event categories</p>
+  </div>
+  <button class="btn-primary" (click)="openAdd()">
+    <i class="ti ti-plus" aria-hidden="true"></i>
+    Add Category
+  </button>
+</div>
+
+@if (isLoading) {
+<div class="loading">Loading...</div>
+} @else {
+<div class="table-card">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Created</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (cat of categories; track cat.id) {
+      <tr>
+        <td>
+          <div class="cat-name">
+            <div class="cat-dot"></div>
+            {{ cat.name }}
+          </div>
+        </td>
+        <td class="muted">{{ cat.description || '—' }}</td>
+        <td class="muted">{{ formatDate(cat.createdAt) }}</td>
+        <td>
+          <div class="actions">
+            <button class="icon-btn" (click)="openEdit(cat)" title="Edit">
+              <i class="ti ti-edit" aria-hidden="true"></i>
+            </button>
+            <button class="icon-btn danger" (click)="delete(cat)" title="Delete">
+              <i class="ti ti-trash" aria-hidden="true"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>
+}
+
+@if (showModal) {
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>{{ isEditMode ? 'Edit Category' : 'Add Category' }}</h3>
+      <button class="icon-btn" (click)="closeModal()">
+        <i class="ti ti-x" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="form.name" placeholder="Category name" />
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea [(ngModel)]="form.description" placeholder="Description (optional)" rows="3"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeModal()">Cancel</button>
+      <button class="btn-primary" (click)="save()">
+        {{ isEditMode ? 'Save Changes' : 'Create Category' }}
+      </button>
+    </div>
+  </div>
+  </div>
+  }

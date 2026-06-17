@@ -20,14 +20,14 @@ namespace EventHub.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Permissions.Admin)]
+        [Authorize(Roles = $"{Permissions.Admin}")]
         public async Task<ActionResult<IEnumerable<CategoryReadDto>>> GetAll()
         {
             return Ok(await _service.GetAllAsync());
         }
 
         [HttpGet("{id}")]
-        [Authorize(Permissions.Admin)]
+        [Authorize(Roles = $"{Permissions.Admin}")]
         public async Task<ActionResult<CategoryReadDto>> GetById(int id)
         {
             return Ok(await _service.GetByIdAsync(id));
@@ -35,7 +35,7 @@ namespace EventHub.API.Controllers
 
         
         [HttpPost]
-        [Authorize(Permissions.Admin)]
+        [Authorize(Roles = $"{Permissions.Admin}")]
         public async Task<ActionResult<CategoryReadDto>> Create([FromBody] CategoryCreateDto dto)
         {
             var created = await _service.AddAsync(dto);
@@ -43,7 +43,7 @@ namespace EventHub.API.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Permissions.Admin)]
+        [Authorize(Roles = $"{Permissions.Admin}")]
         public async Task<ActionResult<CategoryReadDto>> Update(int id, [FromBody] CategoryUpdateDto dto)
         {
             var updated = await _service.UpdateAsync(id, dto);
@@ -51,7 +51,7 @@ namespace EventHub.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Permissions.Admin)]
+        [Authorize(Roles = $"{Permissions.Admin}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);
