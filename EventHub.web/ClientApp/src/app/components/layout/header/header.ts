@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, NavigationEnd, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth.service';
 import { User } from '../../../models/user';
@@ -17,6 +17,14 @@ export class Header implements OnInit {
 
   currentUser: User | null = null;
   dropdownOpen = false;
+
+  constructor() {
+    inject(Router).events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.closeDropdown(); 
+      }
+    });
+  }
 
   ngOnInit() {
     this.authService.getMyProfile().subscribe({

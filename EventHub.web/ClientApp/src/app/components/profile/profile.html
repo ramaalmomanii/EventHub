@@ -1,35 +1,78 @@
-<div class="profile-container" *ngIf="user()">
-  <!--  Avatar  -->
-  <div class="profile-header">
-    <div class="avatar">
-      <img src="assets/avatar-placeholder.png" alt="User Avatar">
-      <button class="edit-btn" (click)="editProfile()">✏️ Edit</button>
+<div class="page-container">
+
+  @if (loading()) {
+  <div class="loading-state">Loading profile...</div>
+  }
+
+  @if (errorMsg()) {
+  <div class="error-banner">{{ errorMsg() }}</div>
+  }
+
+  @if (successMsg) {
+  <div class="success-popup">
+    <span class="success-icon">✓</span>
+    {{ successMsg }}
+  </div>
+  }
+
+  @if (user()) {
+  <!-- Profile Hero -->
+  <div class="profile-hero">
+    <div class="avatar-circle">{{ initials }}</div>
+    <div class="hero-info">
+      <h1 class="hero-name">{{ user()!.fullName }}</h1>
+      <span class="role-chip">{{ user()!.role }}</span>
+      <p class="hero-email">{{ user()!.email }}</p>
     </div>
-    <div class="user-info">
-      <h2>{{ user().fullName }}</h2>
-      <p>{{ user().role }}</p>
-    </div>
+    @if (!editMode) {
+    <button class="btn-primary" (click)="openEdit()">Edit Profile</button>
+    }
   </div>
 
-  <!--  Events -->
-  <div class="profile-events">
-    <h3>Recorded events</h3>
-    <table>
-      <thead>
-        <tr> tt</tr>
-      </thead>
-      <tbody>
-        <tr> tt</tr>
-      </tbody>
-    </table>
-    <ul>
-      <li *ngFor="let event of user().events">{{ event.name }} - {{ event.date | date }}</li>
-    </ul>
+  <!-- Info Card / Edit Form -->
+  <div class="info-card">
+    @if (!editMode) {
+    <!-- View Mode -->
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="info-label">Full Name</span>
+        <span class="info-value">{{ user()!.fullName }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Email</span>
+        <span class="info-value">{{ user()!.email }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Role</span>
+        <span class="info-value">{{ user()!.role }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Status</span>
+        <span class="info-value">{{ user()!.status  }}</span>
+      </div>
+    </div>
+    } @else {
+    <!-- Edit Mode -->
+    <div class="edit-section">
+      <h2 class="edit-title">Edit Profile</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input class="form-input" type="text" [(ngModel)]="editForm.fullName" placeholder="Your full name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" [(ngModel)]="editForm.email" placeholder="Your email" />
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+        <button class="btn-primary" [disabled]="saving" (click)="saveEdit()">
+          {{ saving ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+    }
   </div>
+  }
 </div>
-
-<!-- Loader -->
-<div *ngIf="loading()" class="loader">تحميل...</div>
-
-<!-- Error Message -->
-<div *ngIf="errorMsg()" class="error-msg">{{ errorMsg() }}</div>

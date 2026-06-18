@@ -87,16 +87,17 @@
 
 .dropdown {
   position: absolute;
-  top: 40px;
-  right: 0;
+  top: 100%; 
+  right: 0; 
   width: 200px;
-  background: var(--color-background-primary);
-  border: 0.5px solid var(--color-border-tertiary);
-  border-radius: 10px;
-  padding: 6px;
-  z-index: 200;
+  background: white; 
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  padding: 8px 0;
+  z-index: 9999;
+  margin-top: 8px;
 }
-
 .dropdown-user {
   display: flex;
   align-items: center;
@@ -140,8 +141,8 @@
   }
 
   &:hover {
-    background: var(--color-background-secondary);
-    color: var(--color-text-primary);
+    background: #F4F3FF;
+    color: #534AB7;
   }
 
   &.danger:hover {
