@@ -1,1 +1,69 @@
-<p>payments works!</p>
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ pageTitle }}</h1>
+      <p class="page-subtitle">{{ pageSubtitle }}</p>
+    </div>
+  </div>
+
+  @if (error) {
+  <div class="error-banner">{{ error }}</div>
+  }
+
+  @if (!loading && payments.length > 0) {
+  <div class="summary-row">
+    <div class="summary-card">
+      <span class="summary-label">Total Transactions</span>
+      <span class="summary-value">{{ payments.length }}</span>
+    </div>
+    <div class="summary-card">
+      <span class="summary-label">Total Completed</span>
+      <span class="summary-value">${{ totalAmount }}</span>
+    </div>
+  </div>
+  }
+
+  @if (loading) {
+  <div class="loading-state">Loading payments...</div>
+  } @else {
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#Number</th>
+          <th>Event</th>
+          <th>Method</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (payment of payments; track payment.id) {
+        <tr>
+          <td class="id-cell">{{ payment.id }}</td>
+          <td class="event-cell">{{ payment.eventTitle }}</td>
+          <td class="method-cell">
+            <span class="method-badge">
+              {{ getMethodIcon(payment.paymentMethod) }}
+              {{ payment.paymentMethod }}
+            </span>
+          </td>
+          <td class="amount-cell">${{ payment.amount }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusClass(payment.status)">
+              {{ payment.status }}
+            </span>
+          </td>
+          <td class="date-cell">{{ payment.paidAt | date:'mediumDate' }}</td>
+        </tr>
+        } @empty {
+        <tr>
+          <td colspan="6" class="empty-state">No payments found.</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+</div>

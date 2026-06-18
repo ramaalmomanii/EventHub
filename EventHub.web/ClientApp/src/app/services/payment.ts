@@ -19,4 +19,8 @@ export class PaymentService {
   getByEvent(eventId: number): Observable<Payment[]> {
     return this.http.get<Payment[]>(`${this.apiUrl}/event/${eventId}`);
   }
+
+  getAll(): Observable<Payment[]> {
+    return this.http.get<Payment[]>(this.apiUrl);
+  }
 }

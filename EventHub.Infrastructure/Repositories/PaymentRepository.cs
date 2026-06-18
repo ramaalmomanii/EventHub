@@ -43,5 +43,12 @@ namespace EventHub.Infrastructure.Repositories
                 .Include(r => r.Event)
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
+        public override async Task<List<Payment>> GetAllAsync()
+        {
+            return await _context.Payments
+                .Include(p => p.Registration)
+                    .ThenInclude(r => r.Event)
+                .ToListAsync();
+        }
     }
 }

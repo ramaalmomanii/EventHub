@@ -24,8 +24,12 @@ namespace EventHub.Infrastructure.Repositories
         }
 
 
-        public virtual async Task<List<T>> GetAllAsync() => await _context.Set<T>().ToListAsync();
-
+        //public virtual async Task<List<T>> GetAllAsync() => await _context.Set<T>().ToListAsync();
+        
+        public virtual async Task<List<T>> GetAllAsync()
+        {
+            return await _context.Set<T>().ToListAsync();
+        }
         public virtual async Task<T> GetByIdAsync(int id) => await _context.Set<T>().FindAsync(id);
 
         public virtual async Task AddAsync(T entity)
@@ -51,7 +55,7 @@ namespace EventHub.Infrastructure.Repositories
             var result = await _context.Set<T>().Where(predicate).ToListAsync();
             return result ?? new List<T>();
         }
-
+       
     }
 
 }
