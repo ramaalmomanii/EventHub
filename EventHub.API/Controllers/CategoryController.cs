@@ -20,7 +20,7 @@ namespace EventHub.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = $"{Permissions.Admin}")]
+        [Authorize(Roles = $"{Permissions.Admin},{Permissions.Organizer}")]
         public async Task<ActionResult<IEnumerable<CategoryReadDto>>> GetAll()
         {
             return Ok(await _service.GetAllAsync());
