@@ -30,7 +30,7 @@ export class Sidebar implements OnInit {
     { label: 'My Tickets', icon: 'ti-ticket', route: '/my-tickets', roles: ['Attendee'] },
     { label: 'My Registrations', icon: 'ti-clipboard-list', route: '/my-registrations', roles: ['Attendee'] },
     { label: 'My Events', icon: 'ti-calendar-stats', route: '/my-events', roles: ['Organizer'] },
-    { label: 'Create Event', icon: 'ti-plus', route: '/events/create', roles: ['Organizer', 'Admin'] },
+    { label: 'Create Event', icon: 'ti-plus', route: '/events/new', roles: ['Organizer', 'Admin'] },
     { label: 'Users', icon: 'ti-users', route: '/admin/users', roles: ['Admin'] },
     { label: 'Categories', icon: 'ti-tags', route: '/admin/categories', roles: ['Admin'] },
     { label: 'Payments', icon: 'ti-credit-card', route: '/admin/payments', roles: ['Admin'] },

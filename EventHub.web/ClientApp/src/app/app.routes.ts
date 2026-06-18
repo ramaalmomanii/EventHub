@@ -35,6 +35,18 @@ export const routes: Routes = [
         loadComponent: () => import('./components/event-list/event-list').then(m => m.EventList)
       },
       {
+        path: 'events/new',
+        canActivate: [roleGuard],
+        data: { roles: ['Admin', 'Organizer'] },
+        loadComponent: () => import('./components/events/event-form/event-form').then(m => m.EventForm)
+      },
+      {
+        path: 'events/:id/edit',
+        canActivate: [roleGuard],
+        data: { roles: ['Admin', 'Organizer'] },
+        loadComponent: () => import('./components/events/event-form/event-form').then(m => m.EventForm)
+      },
+      {
         path: 'events/:id',
         loadComponent: () => import('./components/events/event-detail/event-detail').then(m => m.EventDetail)
       },
@@ -45,12 +57,6 @@ export const routes: Routes = [
       {
         path: 'my-registrations',
         loadComponent: () => import('./components/registrations/my-registrations/my-registrations').then(m => m.MyRegistrations)
-      },
-      {
-        path: 'events/create',
-        canActivate: [roleGuard],
-        data: { roles: ['Admin', 'Organizer'] },
-        loadComponent: () => import('./components/events/event-form/event-form').then(m => m.EventForm)
       },
       {
         path: 'admin/users',
@@ -73,5 +79,5 @@ export const routes: Routes = [
     ]
   },
 
-  { path: '**', redirectTo: 'login' }
+  { path: '**', redirectTo: 'dashboard' }
 ];

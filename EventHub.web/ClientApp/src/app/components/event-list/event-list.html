@@ -1,10 +1,75 @@
-<div class="event-list">
-  @for (event of events; track event.title) {
-  <div class="event-card">
-    <h3>{{event.title}}</h3>
-    <p>{{event.date}} - {{event.location}}</p>
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Events</h1>
+      <p class="page-subtitle">
+        @if (isOrganizer) { Your organized events }
+        @else { All events in the system }
+      </p>
+    </div>
+    @if (canCreate) {
+    <button class="btn-primary" (click)="goToCreate()">+ New Event</button>
+    }
   </div>
-  } @empty {
-  <p>لا توجد فعاليات حالياً.</p>
+
+  @if (error) {
+  <div class="error-banner">{{ error }}</div>
+  }
+
+  @if (loading) {
+  <div class="loading-state">Loading events...</div>
+  } @else {
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Location</th>
+          <th>Start Date</th>
+          <th>Price</th>
+          <th>Seats</th>
+          <th>Status</th>
+          @if (canCreate) {
+          <th>Actions</th> }
+        </tr>
+      </thead>
+      <tbody>
+        @for (event of events; track event.id) {
+        <tr class="table-row" (click)="goToDetail(event.id)">
+          <td class="title-cell">{{ event.title }}</td>
+          <td>{{ event.categoryName }}</td>
+          <td>{{ event.location }}</td>
+          <td>{{ event.startDate | date:'mediumDate' }}</td>
+          <td>${{ event.price }}</td>
+          <td>{{ event.availableSeats }} / {{ event.capacity }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusClass(event.status)">
+              {{ event.status }}
+            </span>
+          </td>
+          @if (canCreate) {
+          <td class="actions-cell" (click)="$event.stopPropagation()">
+            @if (canEdit(event)) {
+            <button class="btn-edit" (click)="goToEdit(event.id)">Edit</button>
+            }
+            @if (canDelete(event)) {
+            <button class="btn-delete"
+                    [disabled]="deletingId === event.id"
+                    (click)="deleteEvent(event)">
+              {{ deletingId === event.id ? '...' : 'Delete' }}
+            </button>
+            }
+          </td>
+          }
+        </tr>
+        } @empty {
+        <tr>
+          <td colspan="8" class="empty-state">No events found.</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
   }
 </div>

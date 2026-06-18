@@ -1,1 +1,72 @@
-<p>event-detail works!</p>
+<div class="page-container">
+
+  @if (loading) {
+  <div class="loading-state">Loading event...</div>
+  } @else if (error) {
+  <div class="error-state">
+    <p>{{ error }}</p>
+    <button class="btn-secondary" (click)="goBack()">← Back to Events</button>
+  </div>
+  } @else if (event) {
+  <div class="page-header">
+    <button class="btn-back" (click)="goBack()">← Events</button>
+    @if (canEdit) {
+    <button class="btn-primary" (click)="goToEdit()">Edit Event</button>
+    }
+  </div>
+
+  <div class="detail-card">
+
+    <!-- Hero -->
+    <div class="event-hero">
+      <div class="hero-left">
+        <span class="category-tag">{{ event.categoryName }}</span>
+        <h1 class="event-title">{{ event.title }}</h1>
+        <p class="organizer">By {{ event.organizerName }}</p>
+      </div>
+      <span class="status-badge" [ngClass]="statusClass">{{ event.status }}</span>
+    </div>
+
+    <div class="detail-divider"></div>
+
+    <!-- Info Grid -->
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="info-label">📅 Start</span>
+        <span class="info-value">{{ event.startDate | date:'medium' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">📅 End</span>
+        <span class="info-value">{{ event.endDate | date:'medium' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">📍 Location</span>
+        <span class="info-value">{{ event.location || '—' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">💰 Price</span>
+        <span class="info-value">${{ event.price }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">🪑 Available Seats</span>
+        <span class="info-value">{{ event.availableSeats }} / {{ event.capacity }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">🗓️ Created</span>
+        <span class="info-value">{{ event.createdAt | date:'mediumDate' }}</span>
+      </div>
+    </div>
+
+    <div class="detail-divider"></div>
+
+    <!-- Description -->
+    @if (event.description) {
+    <div class="description-section">
+      <h2 class="section-title">About this Event</h2>
+      <p class="description-text">{{ event.description }}</p>
+    </div>
+    }
+
+  </div>
+  }
+</div>
