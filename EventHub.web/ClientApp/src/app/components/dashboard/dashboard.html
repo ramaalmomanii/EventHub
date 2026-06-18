@@ -1,1 +1,238 @@
-<p>dashboard works!</p>
+<div class="dashboard">
+
+  <!-- Welcome -->
+  <div class="welcome-bar">
+    <div>
+      <h1 class="welcome-title">Welcome back, {{ currentUser?.fullName ?? 'User' }} 👋</h1>
+      <p class="welcome-sub">Here's what's happening today.</p>
+    </div>
+    <span class="role-chip">{{ currentUser?.role }}</span>
+  </div>
+
+  @if (loading) {
+  <div class="loading-state">Loading dashboard...</div>
+  }
+
+  <!-- ───── ADMIN ───── -->
+  @if (isAdmin && !loading) {
+  <div class="stats-grid">
+    <div class="stat-card clickable" (click)="navigate('/admin/users')">
+      <div class="stat-icon users">👥</div>
+      <div class="stat-info">
+        <span class="stat-label">Total Users</span>
+        <span class="stat-value">{{ totalUsers }}</span>
+      </div>
+      <span class="stat-arrow">→</span>
+    </div>
+
+    <div class="stat-card clickable" (click)="navigate('/events')">
+      <div class="stat-icon events">📅</div>
+      <div class="stat-info">
+        <span class="stat-label">Total Events</span>
+        <span class="stat-value">{{ totalEvents }}</span>
+      </div>
+      <span class="stat-arrow">→</span>
+    </div>
+
+    <div class="stat-card clickable" (click)="navigate('/admin/payments')">
+      <div class="stat-icon payments">💳</div>
+      <div class="stat-info">
+        <span class="stat-label">Total Payments</span>
+        <span class="stat-value">{{ totalPayments }}</span>
+      </div>
+      <span class="stat-arrow">→</span>
+    </div>
+
+    <div class="stat-card revenue">
+      <div class="stat-icon revenue-icon">💰</div>
+      <div class="stat-info">
+        <span class="stat-label">Total Revenue</span>
+        <span class="stat-value">${{ totalRevenue }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="quick-actions">
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="actions-grid">
+      <button class="action-card" (click)="navigate('/admin/users')">
+        <span class="action-icon">👤</span>
+        <span class="action-label">Manage Users</span>
+      </button>
+      <button class="action-card" (click)="navigate('/admin/categories')">
+        <span class="action-icon">🏷️</span>
+        <span class="action-label">Manage Categories</span>
+      </button>
+      <button class="action-card" (click)="navigate('/events')">
+        <span class="action-icon">📋</span>
+        <span class="action-label">All Events</span>
+      </button>
+      <button class="action-card" (click)="navigate('/admin/payments')">
+        <span class="action-icon">💳</span>
+        <span class="action-label">All Payments</span>
+      </button>
+    </div>
+  </div>
+  }
+
+  <!-- ───── ORGANIZER ───── -->
+  @if (isOrganizer && !loading) {
+  <div class="stats-grid">
+    <div class="stat-card clickable" (click)="navigate('/events')">
+      <div class="stat-icon events">📅</div>
+      <div class="stat-info">
+        <span class="stat-label">My Events</span>
+        <span class="stat-value">{{ myEvents.length }}</span>
+      </div>
+      <span class="stat-arrow">→</span>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon users">🪑</div>
+      <div class="stat-info">
+        <span class="stat-label">Total Capacity</span>
+        <span class="stat-value">{{ myEventsTotalSeats }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon payments">🎟️</div>
+      <div class="stat-info">
+        <span class="stat-label">Booked Seats</span>
+        <span class="stat-value">{{ myEventsBookedSeats }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card revenue">
+      <div class="stat-icon revenue-icon">📊</div>
+      <div class="stat-info">
+        <span class="stat-label">Occupancy Rate</span>
+        <span class="stat-value">{{ getOccupancyRate() }}%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Occupancy Bar -->
+  <div class="occupancy-section">
+    <div class="occupancy-header">
+      <span class="section-title">Overall Occupancy</span>
+      <span class="occupancy-pct">{{ getOccupancyRate() }}%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="getOccupancyRate()"></div>
+    </div>
+  </div>
+
+  <!-- My Events Table -->
+  @if (myEvents.length > 0) {
+  <div class="recent-section">
+    <div class="section-header">
+      <h2 class="section-title">My Events</h2>
+      <button class="link-btn" (click)="navigate('/events')">View all →</button>
+    </div>
+    <div class="mini-table-wrapper">
+      <table class="mini-table">
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Date</th>
+            <th>Seats Left</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (event of myEvents.slice(0, 5); track event.id) {
+          <tr class="clickable-row" (click)="navigate('/events/' + event.id)">
+            <td class="bold-cell">{{ event.title }}</td>
+            <td>{{ event.startDate | date:'mediumDate' }}</td>
+            <td>{{ event.availableSeats }} / {{ event.capacity }}</td>
+            <td>
+              <span class="mini-badge" [ngClass]="{
+                      'badge-active': event.status === 'Active',
+                      'badge-draft': event.status === 'Draft',
+                      'badge-cancelled': event.status === 'Cancelled',
+                      'badge-completed': event.status === 'Completed'
+                    }">{{ event.status }}</span>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  }
+
+  <div class="quick-actions">
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="actions-grid">
+      <button class="action-card" (click)="navigate('/events/new')">
+        <span class="action-icon">➕</span>
+        <span class="action-label">Create Event</span>
+      </button>
+      <button class="action-card" (click)="navigate('/events')">
+        <span class="action-icon">📋</span>
+        <span class="action-label">My Events</span>
+      </button>
+    </div>
+  </div>
+  }
+
+  <!-- ───── ATTENDEE ───── -->
+  @if (isAttendee && !loading) {
+  <div class="stats-grid">
+    <div class="stat-card clickable" (click)="navigate('/my-registrations')">
+      <div class="stat-icon events">📋</div>
+      <div class="stat-info">
+        <span class="stat-label">My Registrations</span>
+        <span class="stat-value">{{ myRegistrations.length }}</span>
+      </div>
+      <span class="stat-arrow">→</span>
+    </div>
+
+    <div class="stat-card clickable" (click)="navigate('/my-tickets')">
+      <div class="stat-icon users">🎟️</div>
+      <div class="stat-info">
+        <span class="stat-label">My Tickets</span>
+        <span class="stat-value">{{ myTickets.length }}</span>
+      </div>
+      <span class="stat-arrow">→</span>
+    </div>
+
+    <div class="stat-card clickable" (click)="navigate('/admin/payments')">
+      <div class="stat-icon payments">💳</div>
+      <div class="stat-info">
+        <span class="stat-label">My Payments</span>
+        <span class="stat-value">{{ myPayments.length }}</span>
+      </div>
+      <span class="stat-arrow">→</span>
+    </div>
+
+    <div class="stat-card revenue">
+      <div class="stat-icon revenue-icon">💰</div>
+      <div class="stat-info">
+        <span class="stat-label">Total Spent</span>
+        <span class="stat-value">${{ myTotalSpent }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="quick-actions">
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="actions-grid">
+      <button class="action-card" (click)="navigate('/events')">
+        <span class="action-icon">🔍</span>
+        <span class="action-label">Browse Events</span>
+      </button>
+      <button class="action-card" (click)="navigate('/my-registrations')">
+        <span class="action-icon">📋</span>
+        <span class="action-label">My Registrations</span>
+      </button>
+      <button class="action-card" (click)="navigate('/my-tickets')">
+        <span class="action-icon">🎟️</span>
+        <span class="action-label">My Tickets</span>
+      </button>
+    </div>
+  </div>
+  }
+
+</div>

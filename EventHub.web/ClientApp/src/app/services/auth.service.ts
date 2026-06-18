@@ -51,7 +51,9 @@ export class AuthService {
   getRole(): string {
     return this.getCurrentUser()?.role ?? '';
   }
-
+  getUserId(): number {
+    return this.getCurrentUser()?.id ?? 0;
+  }
   isAdmin(): boolean { return this.getRole() === 'Admin'; }
   isOrganizer(): boolean { return this.getRole() === 'Organizer'; }
   isAttendee(): boolean { return this.getRole() === 'Attendee'; }
