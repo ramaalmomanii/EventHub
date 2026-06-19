@@ -29,7 +29,7 @@ export class Sidebar implements OnInit {
     { label: 'Events', icon: 'ti-calendar', route: '/events' },
     { label: 'My Tickets', icon: 'ti-ticket', route: '/my-tickets', roles: ['Attendee'] },
     { label: 'My Registrations', icon: 'ti-clipboard-list', route: '/my-registrations', roles: ['Attendee'] },
-    { label: 'My Events', icon: 'ti-calendar-stats', route: '/my-events', roles: ['Organizer'] },
+    //{ label: 'My Events', icon: 'ti-calendar-stats', route: '/my-events', roles: ['Organizer'] },
     { label: 'Create Event', icon: 'ti-plus', route: '/events/new', roles: ['Organizer', 'Admin'] },
     { label: 'Users', icon: 'ti-users', route: '/admin/users', roles: ['Admin'] },
     { label: 'Categories', icon: 'ti-tags', route: '/admin/categories', roles: ['Admin'] },
@@ -64,8 +64,7 @@ export class Sidebar implements OnInit {
     const role = this.currentUser?.role ?? '';
     if (role !== 'Organizer') return [];
     return this.filteredNavItems.filter(i =>
-      i.roles?.includes('Organizer') && !i.roles?.includes('Admin')
-    );
+      i.roles?.includes('Organizer'));
   }
 
   // Admin
