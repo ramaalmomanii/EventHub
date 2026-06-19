@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, HostListener } from '@angular/core';
 import { Router, NavigationEnd, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth.service';
@@ -49,6 +49,14 @@ export class Header implements OnInit {
   goToProfile() {
     this.router.navigate(['/profile']);
     this.closeDropdown();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const clickedElement = event.target as HTMLElement;
+    if (!clickedElement.closest('.avatar-wrap')) {
+      this.closeDropdown();
+    }
   }
 
   logout() {
