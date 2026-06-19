@@ -66,7 +66,9 @@ namespace EventHub.Infrastructure.Services
             ev.OrganizerId = currentUserId;
             ev.CreatedAt = DateTime.UtcNow;
             ev.AvailableSeats = dto.Capacity;
-            ev.Status = "Pending";
+            // TODO RAMA : add an admin cheek pending-> admincheek -> accept(upcoming) or reject(not active)
+           // ev.Status = "Pending";
+            ev.Status = "Upcoming";
 
             await _repository.AddAsync(ev);
             return _mapper.Map<EventReadDto>(ev);

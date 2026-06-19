@@ -23,4 +23,8 @@ export class RegistrationService {
   cancel(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  getByUserAndEvent(userId: number, eventId: number): Observable<Registration> {
+    return this.http.get<Registration>(`${this.apiUrl}/user/${userId}/event/${eventId}`);
+  }
 }

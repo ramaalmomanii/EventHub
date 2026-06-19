@@ -197,3 +197,77 @@
   margin: 0;
   white-space: pre-wrap;
 }
+
+.registration-area {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.btn-register {
+  background: #1a7a4a;
+  color: white;
+  border: none;
+  padding: 0.65rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  font-family: inherit;
+
+  &:hover:not(:disabled) {
+    opacity: 0.85;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn-cancel-reg {
+  background: white;
+  color: #cc3333;
+  border: 1px solid #ffcccc;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+
+  &:hover:not(:disabled) {
+    background: #fff0f0;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.registered-badge {
+  background: #e6f9f0;
+  color: #1a7a4a;
+  padding: 0.4rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.reg-success {
+  background: #e6f9f0;
+  color: #1a7a4a;
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.reg-error {
+  background: #fff0f0;
+  color: #cc3333;
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}

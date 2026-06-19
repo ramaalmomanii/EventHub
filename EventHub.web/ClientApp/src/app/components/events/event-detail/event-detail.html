@@ -10,6 +10,34 @@
   } @else if (event) {
   <div class="page-header">
     <button class="btn-back" (click)="goBack()">← Events</button>
+    <!-- Registration Actions — Attendee only -->
+    @if (isAttendee && event.status === 'Upcoming') {
+    <div class="registration-area">
+      @if (registrationSuccess) {
+      <div class="reg-success">✓ {{ registrationSuccess }}</div>
+      }
+      @if (registrationError) {
+      <div class="reg-error">{{ registrationError }}</div>
+      }
+
+      @if (!myRegistration || isCancelled) {
+      <button class="btn-register"
+              [disabled]="registering || event.availableSeats === 0"
+              (click)="register()">
+        @if (registering) { Registering... }
+        @else if (event.availableSeats === 0) { Fully Booked }
+        @else { Register Now }
+      </button>
+      } @else if (isRegistered) {
+      <div class="registered-badge">✓ You're registered</div>
+      <button class="btn-cancel-reg"
+              [disabled]="registering"
+              (click)="cancelRegistration()">
+        {{ registering ? 'Cancelling...' : 'Cancel Registration' }}
+      </button>
+      }
+    </div>
+    }
     @if (canEdit) {
     <button class="btn-primary" (click)="goToEdit()">Edit Event</button>
     }

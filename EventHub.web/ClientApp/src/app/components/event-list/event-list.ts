@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { EventService } from '../../services/event';
 import { AuthService } from '../../services/auth.service';
+import { RegistrationService } from '../../services/registration';
 import { Event } from '../../models/event';
+import { Registration } from '../../models/registration';
 
 @Component({
   selector: 'app-event-list',
@@ -16,17 +18,20 @@ export class EventList implements OnInit {
   private eventService = inject(EventService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private registrationService = inject(RegistrationService);
 
   events: Event[] = [];
   loading = false;
   error = '';
   deletingId: number | null = null;
+  myRegistrations: Registration[] = [];
 
   get currentRole() { return this.authService.getRole(); }
   get currentUserId() { return this.authService.getUserId(); }
   get isAdmin() { return this.authService.isAdmin(); }
   get isOrganizer() { return this.authService.isOrganizer(); }
   get canCreate() { return this.isAdmin || this.isOrganizer; }
+  get isAttendee() { return this.authService.isAttendee(); }
 
   canEdit(event: Event): boolean {
     return this.isAdmin || event.organizerId === this.currentUserId;
@@ -38,8 +43,29 @@ export class EventList implements OnInit {
 
   ngOnInit() {
     this.loadEvents();
+    if (this.isAttendee) this.loadMyRegistrations();
   }
 
+  loadMyRegistrations() {
+    this.registrationService.getMyRegistrations().subscribe({
+      next: (regs) => this.myRegistrations = regs,
+      error: () => { }
+    });
+  }
+
+  isRegistered(eventId: number): boolean {
+    return this.myRegistrations.some(r => r.eventId === eventId && r.status === 'Confirmed');
+  }
+
+  registerEvent(event: Event) {
+    this.registrationService.register({ eventId: event.id }).subscribe({
+      next: (reg) => {
+        this.myRegistrations.push(reg);
+        event.availableSeats--;
+      },
+      error: (err) => { this.error = err?.error?.message ?? 'Registration failed.'; }
+    });
+  }
   loadEvents() {
     this.loading = true;
     this.error = '';
@@ -82,6 +108,7 @@ export class EventList implements OnInit {
       'Active': 'status-active',
       'Cancelled': 'status-cancelled',
       'Completed': 'status-completed',
+      'Upcoming':'status-upcoming',
       'Draft': 'status-draft'
     };
     return map[status] ?? 'status-draft';

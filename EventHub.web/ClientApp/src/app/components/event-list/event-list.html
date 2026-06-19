@@ -32,6 +32,8 @@
           <th>Status</th>
           @if (canCreate) {
           <th>Actions</th> }
+          @if (isAttendee) {
+          <th>Action</th> }
         </tr>
       </thead>
       <tbody>
@@ -48,6 +50,21 @@
               {{ event.status }}
             </span>
           </td>
+          @if (isAttendee) {
+          <td (click)="$event.stopPropagation()">
+            @if (event.status === 'Upcoming') {
+            @if (isRegistered(event.id)) {
+            <span class="reg-badge">✓ Registered</span>
+            } @else {
+            <button class="btn-register-sm"
+                    [disabled]="event.availableSeats === 0"
+                    (click)="registerEvent(event)">
+              {{ event.availableSeats === 0 ? 'Full' : 'Register' }}
+            </button>
+            }
+            }
+          </td>
+          }
           @if (canCreate) {
           <td class="actions-cell" (click)="$event.stopPropagation()">
             @if (canEdit(event)) {
