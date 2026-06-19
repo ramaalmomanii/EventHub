@@ -48,6 +48,10 @@ export class AuthService {
     return !!localStorage.getItem('token');
   }
 
+  changePassword(dto: { currentPassword: string; newPassword: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/change-password`, dto);
+  }
+
   getRole(): string {
     return this.getCurrentUser()?.role ?? '';
   }

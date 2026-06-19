@@ -9,7 +9,7 @@ namespace EventHub.Core.DTOs.Users
     public class UserUpdateDto
     {
         public string FullName { get; set; }
-        public string Status { get; set; }
+        public string? Status { get; set; }
     }
 
     public class AdminUpdateUserDto

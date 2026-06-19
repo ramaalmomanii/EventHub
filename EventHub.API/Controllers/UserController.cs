@@ -109,6 +109,15 @@ namespace EventHub.API.Controllers
             return Ok(new { message = "Password has been reset successfully" });
         }
 
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            var userId = int.Parse(User.FindFirst("id")!.Value);
+            await _userService.ChangePasswordAsync(userId, dto);
+            return Ok(new { message = "Password changed successfully" });
+
+        }
         [HttpPost("send-verification/{email}")]
         public async Task<IActionResult> SendVerification(string email)
         {

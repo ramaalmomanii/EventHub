@@ -26,6 +26,8 @@ namespace EventHub.Core.Interfaces.Services
         Task<UserReadDto> CreateUserAsync(AdminCreateUserDto dto);
         Task<UserReadDto> UpdateUserAsync(int id, AdminUpdateUserDto dto);
         Task DeleteUserAsync(int id);
+        Task ChangePasswordAsync(int userId, ChangePasswordDto dto);
+
     }
 
 }

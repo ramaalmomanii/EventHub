@@ -16,7 +16,8 @@
   }
 
   @if (user()) {
-  <!-- Profile Hero -->
+
+  <!-- Hero -->
   <div class="profile-hero">
     <div class="avatar-circle">{{ initials }}</div>
     <div class="hero-info">
@@ -24,46 +25,48 @@
       <span class="role-chip">{{ user()!.role }}</span>
       <p class="hero-email">{{ user()!.email }}</p>
     </div>
-    @if (!editMode) {
-    <button class="btn-primary" (click)="openEdit()">Edit Profile</button>
-    }
   </div>
 
-  <!-- Info Card / Edit Form -->
+  <!-- Card 1: Profile Info -->
   <div class="info-card">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title">Profile Info</h2>
+        <p class="card-subtitle">Your basic account details</p>
+      </div>
+      @if (!editMode) {
+      <button class="btn-secondary" (click)="openEdit()">Edit</button>
+      }
+    </div>
+
     @if (!editMode) {
-    <!-- View Mode -->
-    <div class="info-grid">
-      <div class="info-item">
-        <span class="info-label">Full Name</span>
-        <span class="info-value">{{ user()!.fullName }}</span>
-      </div>
-      <div class="info-item">
-        <span class="info-label">Email</span>
-        <span class="info-value">{{ user()!.email }}</span>
-      </div>
-      <div class="info-item">
-        <span class="info-label">Role</span>
-        <span class="info-value">{{ user()!.role }}</span>
-      </div>
-      <div class="info-item">
-        <span class="info-label">Status</span>
-        <span class="info-value">{{ user()!.status  }}</span>
+    <div class="card-body">
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Full Name</span>
+          <span class="info-value">{{ user()!.fullName }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Email</span>
+          <span class="info-value">{{ user()!.email }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Role</span>
+          <span class="info-value">{{ user()!.role }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Status</span>
+          <span class="info-value">{{ user()!.status }}</span>
+        </div>
       </div>
     </div>
     } @else {
-    <!-- Edit Mode -->
-    <div class="edit-section">
-      <h2 class="edit-title">Edit Profile</h2>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Full Name</label>
-          <input class="form-input" type="text" [(ngModel)]="editForm.fullName" placeholder="Your full name" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          <input class="form-input" type="email" [(ngModel)]="editForm.email" placeholder="Your email" />
-        </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input class="form-input" type="text"
+               [(ngModel)]="editForm.fullName"
+               placeholder="Your full name" />
       </div>
       <div class="form-actions">
         <button class="btn-secondary" (click)="cancelEdit()">Cancel</button>
@@ -74,5 +77,53 @@
     </div>
     }
   </div>
+
+  <!-- Card 2: Change Password -->
+  <div class="info-card">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title">Change Password</h2>
+        <p class="card-subtitle">Update your account password</p>
+      </div>
+      @if (!showPasswordForm) {
+      <button class="btn-secondary" (click)="openPasswordForm()">Change</button>
+      }
+    </div>
+
+    @if (showPasswordForm) {
+    <div class="card-body">
+      @if (passwordError) {
+      <div class="error-banner">{{ passwordError }}</div>
+      }
+      <div class="form-group">
+        <label class="form-label">Current Password</label>
+        <input class="form-input" type="password"
+               [(ngModel)]="passwordForm.currentPassword"
+               placeholder="Enter current password" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input class="form-input" type="password"
+                 [(ngModel)]="passwordForm.newPassword"
+                 placeholder="Min. 6 characters" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <input class="form-input" type="password"
+                 [(ngModel)]="passwordForm.confirmPassword"
+                 placeholder="Repeat new password" />
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-secondary" (click)="cancelPasswordForm()">Cancel</button>
+        <button class="btn-primary" [disabled]="savingPassword" (click)="changePassword()">
+          {{ savingPassword ? 'Saving...' : 'Change Password' }}
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+
   }
 </div>

@@ -211,6 +211,22 @@ namespace EventHub.Infrastructure.Services
             };
         }
 
+        public async Task ChangePasswordAsync(int userId, ChangePasswordDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.CurrentPassword) || string.IsNullOrWhiteSpace(dto.NewPassword))
+                throw new ValidationException("Current and new password are required");
+
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null)
+                throw new NotFoundException("User not found");
+
+            if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash))
+                throw new UnauthorizedException("Current password is incorrect");
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+            await _userRepository.UpdateAsync(user);
+        }
+
         public async Task RequestPasswordResetAsync(string email)
         {
             if (string.IsNullOrWhiteSpace(email))
