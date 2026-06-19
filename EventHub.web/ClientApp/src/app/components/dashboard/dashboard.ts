@@ -50,6 +50,17 @@ export class Dashboard implements OnInit {
   loading = false;
 
   ngOnInit() {
+    if (!this.authService.getCurrentUser()) {
+      this.authService.getMyProfile().subscribe({
+        next: () => this.loadData(),
+        error: () => this.loadData()
+      });
+    } else {
+      this.loadData();
+    }
+  }
+
+  loadData() {
     if (this.isAdmin) this.loadAdminData();
     else if (this.isOrganizer) this.loadOrganizerData();
     else this.loadAttendeeData();
