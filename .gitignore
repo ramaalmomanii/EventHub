@@ -24,3 +24,12 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+
+appsettings.json
+appsettings.*.json
+*.pdf
+.vs/
+bin/
+obj/
+*.user
+*.suo
