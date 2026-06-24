@@ -87,6 +87,13 @@
 
     <div class="detail-divider"></div>
 
+    <!-- AI Summary -->
+    <div class="description-section">
+      <app-event-summary [eventId]="event.id"></app-event-summary>
+    </div>
+
+    <div class="detail-divider"></div>
+
     <!-- Description -->
     @if (event.description) {
     <div class="description-section">

@@ -1,1 +1,36 @@
-<p>my-tickets works!</p>
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">My Tickets</h1>
+      <p class="page-sub">Your event tickets — download anytime</p>
+    </div>
+  </div>
+
+  @if (downloadError) {
+  <div class="error-banner">{{ downloadError }}</div>
+  }
+
+  @if (loading) {
+  <div class="loading-state">Loading your tickets...</div>
+  } @else if (error) {
+  <div class="error-state">
+    <p>{{ error }}</p>
+    <button class="btn-secondary" (click)="loadTickets()">Try Again</button>
+  </div>
+  } @else if (tickets.length === 0) {
+  <div class="empty-state">
+    <span class="empty-icon">🎟️</span>
+    <h2>No tickets yet</h2>
+    <p>Register for an event to get your ticket here.</p>
+  </div>
+  } @else {
+  <div class="tickets-grid">
+    @for (ticket of tickets; track ticket.id) {
+    <app-ticket-card
+      [ticket]="ticket"
+      (download)="downloadTicket($event)">
+    </app-ticket-card>
+    }
+  </div>
+  }
+</div>

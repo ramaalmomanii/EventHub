@@ -1,0 +1,47 @@
+<div class="ticket-card">
+  <div class="ticket-header">
+    <span class="ticket-icon">🎟️</span>
+    <div class="ticket-meta">
+      <span class="ticket-id">Ticket #{{ ticket.id }}</span>
+      <span class="ticket-date">{{ ticket.createdAt | date:'mediumDate' }}</span>
+    </div>
+  </div>
+
+  <h3 class="event-title">{{ ticket.eventTitle || 'Event #' + ticket.eventId }}</h3>
+
+  <div class="ticket-details">
+    @if (ticket.eventStartDate) {
+    <div class="detail-row">
+      <span class="detail-label">📅 Date</span>
+      <span class="detail-value">{{ ticket.eventStartDate | date:'medium' }}</span>
+    </div>
+    }
+    @if (ticket.eventLocation) {
+    <div class="detail-row">
+      <span class="detail-label">📍 Location</span>
+      <span class="detail-value">{{ ticket.eventLocation }}</span>
+    </div>
+    }
+    <div class="detail-row">
+      <span class="detail-label">🪑 Seat</span>
+      <span class="detail-value seat-badge">{{ ticket.seatNumber }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">💰 Price</span>
+      <span class="detail-value price">${{ ticket.price }}</span>
+    </div>
+  </div>
+
+  <div class="ticket-footer">
+    <div class="perforated-line"></div>
+    <button class="btn-download"
+            [disabled]="downloading"
+            (click)="onDownload()">
+      @if (downloading) {
+        <span>Downloading...</span>
+      } @else {
+        <span>⬇ Download PDF</span>
+      }
+    </button>
+  </div>
+</div>

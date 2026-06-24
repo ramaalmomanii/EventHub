@@ -15,10 +15,12 @@ namespace EventHub.API.Controllers
     public class EventController : ControllerBase
     {
         private readonly IEventService _service;
+        private readonly IEventSummaryService _summaryService;
 
-        public EventController(IEventService service)
+        public EventController(IEventService service, IEventSummaryService summaryService)
         {
             _service = service;
+            _summaryService = summaryService;
         }
 
         [HttpGet]
@@ -34,6 +36,14 @@ namespace EventHub.API.Controllers
             if (ev == null)
                 return NotFound(new { message = "Event not found" });
             return Ok(ev);
+        }
+
+        [Authorize(Roles = $"{Permissions.Admin},{Permissions.Organizer},{Permissions.Attendee}")]
+        [HttpGet("{id}/summary")]
+        public async Task<ActionResult<EventSummaryDto>> GetSummary(int id, [FromQuery] string provider = "openai")
+        {
+            var summary = await _summaryService.GetSummaryAsync(id, provider);
+            return Ok(summary);
         }
 
         

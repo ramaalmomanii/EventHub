@@ -30,6 +30,7 @@
           <th>Price</th>
           <th>Seats</th>
           <th>Status</th>
+          <th>AI Summary</th>
           @if (canCreate) {
           <th>Actions</th> }
           @if (isAttendee) {
@@ -49,6 +50,9 @@
             <span class="status-badge" [ngClass]="getStatusClass(event.status)">
               {{ event.status }}
             </span>
+          </td>
+          <td class="summary-cell" (click)="$event.stopPropagation()">
+            <app-event-summary [eventId]="event.id" [compact]="true"></app-event-summary>
           </td>
           @if (isAttendee) {
           <td (click)="$event.stopPropagation()">

@@ -17,6 +17,10 @@ namespace EventHub.Core.DTOs.Ticket
 
         public string SeatNumber { get; set; }
         public DateTime CreatedAt { get; set; }
+
+        public string EventTitle { get; set; } = string.Empty;
+        public DateTime? EventStartDate { get; set; }
+        public string? EventLocation { get; set; }
     }
 }
 

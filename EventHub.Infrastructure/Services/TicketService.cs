@@ -129,7 +129,10 @@ namespace EventHub.Infrastructure.Services
             Price = t.Price,
             SeatNumber = t.SeatNumber,
             CreatedAt = t.CreatedAt,
-            PdfPath = t.PdfPath
+            PdfPath = t.PdfPath,
+            EventTitle = t.Event?.Title ?? string.Empty,
+            EventStartDate = t.Event?.StartDate,
+            EventLocation = t.Event?.Location
         };
 
         private byte[] GenerateQrCode(string text)

@@ -5,12 +5,13 @@ import { EventService } from '../../../services/event';
 import { AuthService } from '../../../services/auth.service';
 import { Event } from '../../../models/event';
 import { RegistrationService } from '../../../services/registration';
+import { EventSummaryComponent } from '../event-summary/event-summary';
 
 
 @Component({
   selector: 'app-event-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EventSummaryComponent],
   templateUrl: './event-detail.html',
   styleUrl: './event-detail.scss'
 })

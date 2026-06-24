@@ -5,6 +5,7 @@ using EventHub.Core.Repositories;
 using EventHub.Infrastructure.Data;
 using EventHub.Infrastructure.Helpers;
 using EventHub.Infrastructure.Repositories;
+using EventHub.Infrastructure.Options;
 using EventHub.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
@@ -36,6 +37,11 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IEventSummaryService, EventSummaryService>();
+
+builder.Services.Configure<AiOptions>(builder.Configuration.GetSection(AiOptions.SectionName));
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient();
 
 // =====================
 // Helpers

@@ -7,4 +7,7 @@ export interface Ticket {
   seatNumber: string;
   pdfPath: string;
   createdAt: string;
+  eventTitle: string;
+  eventStartDate?: string;
+  eventLocation?: string;
 }

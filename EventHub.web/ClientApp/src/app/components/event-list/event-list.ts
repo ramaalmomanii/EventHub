@@ -6,11 +6,12 @@ import { AuthService } from '../../services/auth.service';
 import { RegistrationService } from '../../services/registration';
 import { Event } from '../../models/event';
 import { Registration } from '../../models/registration';
+import { EventSummaryComponent } from '../events/event-summary/event-summary';
 
 @Component({
   selector: 'app-event-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EventSummaryComponent],
   templateUrl: './event-list.html',
   styleUrl: './event-list.scss'
 })

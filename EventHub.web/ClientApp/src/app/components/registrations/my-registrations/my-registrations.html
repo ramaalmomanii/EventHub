@@ -1,1 +1,63 @@
-<p>my-registrations works!</p>
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">My Registrations</h1>
+      <p class="page-sub">Events you've registered for</p>
+    </div>
+  </div>
+
+  @if (actionError) {
+  <div class="error-banner">{{ actionError }}</div>
+  }
+
+  @if (loading) {
+  <div class="loading-state">Loading your registrations...</div>
+  } @else if (error) {
+  <div class="error-state">
+    <p>{{ error }}</p>
+    <button class="btn-secondary" (click)="loadRegistrations()">Try Again</button>
+  </div>
+  } @else if (registrations.length === 0) {
+  <div class="empty-state">
+    <span class="empty-icon">📋</span>
+    <h2>No registrations yet</h2>
+    <p>Browse events and register to see them here.</p>
+    <button class="btn-primary" (click)="router.navigate(['/events'])">Browse Events</button>
+  </div>
+  } @else {
+  <div class="registrations-grid">
+    @for (reg of registrations; track reg.id) {
+    <div class="registration-card" [class.cancelled]="reg.status === 'Cancelled'">
+      <div class="card-header">
+        <span class="reg-icon">📋</span>
+        <span class="status-badge" [ngClass]="getStatusClass(reg.status)">{{ reg.status }}</span>
+      </div>
+
+      <h3 class="event-title">{{ reg.eventTitle }}</h3>
+
+      <div class="card-details">
+        <div class="detail-row">
+          <span class="detail-label">Registered</span>
+          <span class="detail-value">{{ reg.registrationDate | date:'medium' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Attendee</span>
+          <span class="detail-value">{{ reg.attendeeName }}</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn-view" (click)="goToEvent(reg.eventId)">View Event →</button>
+        @if (reg.status === 'Confirmed') {
+        <button class="btn-cancel"
+                [disabled]="cancellingId === reg.id"
+                (click)="cancelRegistration(reg)">
+          {{ cancellingId === reg.id ? 'Cancelling...' : 'Cancel' }}
+        </button>
+        }
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>
