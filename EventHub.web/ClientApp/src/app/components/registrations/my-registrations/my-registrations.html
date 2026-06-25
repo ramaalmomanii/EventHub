@@ -17,7 +17,7 @@
     <p>{{ error }}</p>
     <button class="btn-secondary" (click)="loadRegistrations()">Try Again</button>
   </div>
-  } @else if (registrations.length === 0) {
+  } @else if (visibleRegistrations.length === 0) {
   <div class="empty-state">
     <span class="empty-icon">📋</span>
     <h2>No registrations yet</h2>
@@ -26,7 +26,7 @@
   </div>
   } @else {
   <div class="registrations-grid">
-    @for (reg of registrations; track reg.id) {
+    @for (reg of visibleRegistrations; track reg.id) {
     <div class="registration-card" [class.cancelled]="reg.status === 'Cancelled'">
       <div class="card-header">
         <span class="reg-icon">📋</span>

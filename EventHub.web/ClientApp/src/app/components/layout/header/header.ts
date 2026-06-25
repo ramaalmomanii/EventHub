@@ -17,6 +17,7 @@ export class Header implements OnInit {
 
   currentUser: User | null = null;
   dropdownOpen = false;
+  isDarkMode = localStorage.getItem('theme') === 'dark';
 
   constructor() {
     inject(Router).events.subscribe(event => {
@@ -27,6 +28,8 @@ export class Header implements OnInit {
   }
 
   ngOnInit() {
+    this.applyTheme();
+
     this.authService.getMyProfile().subscribe({
       next: user => this.currentUser = user,
       error: () => { }
@@ -40,6 +43,16 @@ export class Header implements OnInit {
 
   toggleDropdown() {
     this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  toggleTheme() {
+    this.isDarkMode = !this.isDarkMode;
+    localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
+    this.applyTheme();
+  }
+
+  private applyTheme() {
+    document.body.classList.toggle('dark-theme', this.isDarkMode);
   }
 
   closeDropdown() {

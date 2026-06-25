@@ -6,6 +6,8 @@ export interface Registration {
   attendeeName: string;
   registrationDate: string;
   status: string;
+  eventEndDate: string;
+  eventStatus: string;
 }
 
 export interface RegistrationCreateDto {

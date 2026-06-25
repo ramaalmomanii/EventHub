@@ -45,6 +45,8 @@ export class EventDetail implements OnInit {
       'Active': 'status-active',
       'Cancelled': 'status-cancelled',
       'Completed': 'status-completed',
+      'Upcoming': 'status-upcoming',
+      'Inactive': 'status-inactive',
       'Draft': 'status-draft'
     };
     return this.event ? (map[this.event.status] ?? 'status-draft') : '';

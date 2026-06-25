@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EventHub.Core.Constants;
 using EventHub.Core.DTOs;
 using EventHub.Core.DTOs.Events;
@@ -33,6 +33,7 @@ namespace EventHub.Infrastructure.Services
         public async Task<IEnumerable<EventReadDto>> GetAllAsync()
         {
             var events = await _repository.GetAllAsync();
+            await SyncEventStatusesAsync(events);
             return _mapper.Map<IEnumerable<EventReadDto>>(events);
         }
 
@@ -42,6 +43,9 @@ namespace EventHub.Infrastructure.Services
                 throw new ValidationException("Invalid event ID");
 
             var ev = await _repository.GetByIdAsync(id);
+            if (ev != null)
+                await SyncEventStatusAsync(ev);
+
             return ev == null ? null : _mapper.Map<EventReadDto>(ev);
         }
 
@@ -53,9 +57,6 @@ namespace EventHub.Infrastructure.Services
             if (string.IsNullOrWhiteSpace(dto.Title))
                 throw new ValidationException("Event title is required");
 
-            if (dto.StartDate < DateTime.UtcNow)
-                throw new ValidationException("Start date cannot be in the past");
-
             if (dto.EndDate <= dto.StartDate)
                 throw new ValidationException("End date must be after start date");
 
@@ -66,9 +67,7 @@ namespace EventHub.Infrastructure.Services
             ev.OrganizerId = currentUserId;
             ev.CreatedAt = DateTime.UtcNow;
             ev.AvailableSeats = dto.Capacity;
-            // TODO RAMA : add an admin cheek pending-> admincheek -> accept(upcoming) or reject(not active)
-           // ev.Status = "Pending";
-            ev.Status = "Upcoming";
+            SetStatusFromSchedule(ev);
 
             await _repository.AddAsync(ev);
             return _mapper.Map<EventReadDto>(ev);
@@ -89,9 +88,6 @@ namespace EventHub.Infrastructure.Services
             if (role == Permissions.Organizer && existing.OrganizerId != currentUserId)
                 throw new ForbiddenException("You cannot update events created by other organizers");
 
-            if (dto.StartDate < DateTime.UtcNow)
-                throw new ValidationException("Start date cannot be in the past");
-
             if (dto.EndDate <= dto.StartDate)
                 throw new ValidationException("End date must be after start date");
 
@@ -108,6 +104,7 @@ namespace EventHub.Infrastructure.Services
             }
 
             _mapper.Map(dto, existing);
+            SetStatusFromSchedule(existing);
             await _repository.UpdateAsync(existing);
 
             return _mapper.Map<EventReadDto>(existing);
@@ -134,6 +131,7 @@ namespace EventHub.Infrastructure.Services
                 throw new ValidationException("Invalid user ID");
 
             var events = await _repository.GetByOrganizerAsync(userId);
+            await SyncEventStatusesAsync(events);
             return _mapper.Map<IEnumerable<EventReadDto>>(events);
         }
 
@@ -142,7 +140,7 @@ namespace EventHub.Infrastructure.Services
             if (id <= 0)
                 throw new ValidationException("Invalid event ID");
 
-            var validStatuses = new[] { "Pending", "Upcoming", "Ongoing", "Completed", "Cancelled" };
+            var validStatuses = new[] { "Pending", "Upcoming", "Active", "Ongoing", "Completed", "Cancelled", "Inactive" };
             if (!validStatuses.Contains(status))
                 throw new ValidationException($"Invalid status. Valid values: {string.Join(", ", validStatuses)}");
 
@@ -170,6 +168,8 @@ namespace EventHub.Infrastructure.Services
             var ev = await _repository.GetByIdAsync(eventId);
             if (ev == null)
                 throw new NotFoundException($"Event with ID {eventId} not found");
+
+            await SyncEventStatusAsync(ev);
 
             if (ev.Status != "Upcoming")
                 throw new ValidationException("Cannot register to an event that is not upcoming");
@@ -215,6 +215,45 @@ namespace EventHub.Infrastructure.Services
             {
                 ev.AvailableSeats++;
                 await _repository.UpdateAsync(ev);
+            }
+        }
+
+        private async Task SyncEventStatusesAsync(IEnumerable<EEvent> events)
+        {
+            foreach (var ev in events)
+            {
+                await SyncEventStatusAsync(ev);
+            }
+        }
+
+        private async Task SyncEventStatusAsync(EEvent ev)
+        {
+            var previousStatus = ev.Status;
+            SetStatusFromSchedule(ev);
+
+            if (ev.Status != previousStatus)
+            {
+                await _repository.UpdateAsync(ev);
+            }
+        }
+
+        private static void SetStatusFromSchedule(EEvent ev)
+        {
+            if (ev.Status == "Cancelled")
+                return;
+
+            var now = DateTime.UtcNow;
+            if (ev.EndDate <= now)
+            {
+                ev.Status = "Inactive";
+            }
+            else if (ev.StartDate <= now)
+            {
+                ev.Status = "Active";
+            }
+            else
+            {
+                ev.Status = "Upcoming";
             }
         }
     }

@@ -25,6 +25,14 @@ export class MyRegistrations implements OnInit {
     this.loadRegistrations();
   }
 
+  get visibleRegistrations(): Registration[] {
+    const now = Date.now();
+    return this.registrations.filter(reg => {
+      const eventEndTime = reg.eventEndDate ? new Date(reg.eventEndDate).getTime() : Number.POSITIVE_INFINITY;
+      return reg.eventStatus !== 'Inactive' && eventEndTime > now;
+    });
+  }
+
   loadRegistrations() {
     this.loading = true;
     this.error = '';

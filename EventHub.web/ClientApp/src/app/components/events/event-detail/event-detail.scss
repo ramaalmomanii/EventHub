@@ -136,7 +136,13 @@
     color: #3949ab;
   }
 
-  &.status-draft {
+  &.status-upcoming {
+    background: #9fefd4;
+    color: #3949ab;
+  }
+
+  &.status-draft,
+  &.status-inactive {
     background: #f5f5f5;
     color: #888;
   }

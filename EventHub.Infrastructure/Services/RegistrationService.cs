@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EventHub.Core.Constants;
 using EventHub.Core.DTOs.Registertions;
 using EventHub.Core.DTOs.Ticket;
@@ -38,6 +38,8 @@ namespace EventHub.Infrastructure.Services
             var ev = await _eventRepository.GetByIdAsync(dto.EventId);
             if (ev == null)
                 throw new NotFoundException("Event not found");
+
+            await SyncEventStatusAsync(ev);
 
             if (ev.Status != "Upcoming")
                 throw new ValidationException("Cannot register to an event that is not upcoming");
@@ -126,7 +128,11 @@ namespace EventHub.Infrastructure.Services
             if (reg == null) return null;
 
             var ev = await _eventRepository.GetByIdAsync(eventId);
-            return ev == null ? null : MapToDto(reg, ev);
+            if (ev == null)
+                return null;
+
+            await SyncEventStatusAsync(ev);
+            return MapToDto(reg, ev);
         }
 
         public async Task<IEnumerable<RegistrationReadDto>> GetByEventAsync(int eventId)
@@ -139,6 +145,8 @@ namespace EventHub.Infrastructure.Services
             if (ev == null)
                 throw new NotFoundException("Event not found");
 
+            await SyncEventStatusAsync(ev);
+
             return registrations.Select(r => MapToDto(r, ev));
         }
 
@@ -149,6 +157,12 @@ namespace EventHub.Infrastructure.Services
 
             // GetByUserAsync 
             var registrations = await _registrationRepository.GetByUserAsync(userId);
+            foreach (var registration in registrations)
+            {
+                if (registration.Event != null)
+                    await SyncEventStatusAsync(registration.Event);
+            }
+
             return registrations.Select(r => new RegistrationReadDto
             {
                 Id = r.Id,
@@ -157,7 +171,9 @@ namespace EventHub.Infrastructure.Services
                 AttendeeId = r.AttendeeId,
                 AttendeeName = r.Attendee?.FullName ?? "Unknown",
                 RegistrationDate = r.RegistrationDate,
-                Status = r.Status
+                Status = r.Status,
+                EventEndDate = r.Event?.EndDate ?? DateTime.MinValue,
+                EventStatus = r.Event?.Status ?? "Unknown"
             });
         }
 
@@ -172,8 +188,40 @@ namespace EventHub.Infrastructure.Services
                 AttendeeId = reg.AttendeeId,
                 AttendeeName = reg.Attendee?.FullName ?? "Unknown",
                 RegistrationDate = reg.RegistrationDate,
-                Status = reg.Status
+                Status = reg.Status,
+                EventEndDate = ev.EndDate,
+                EventStatus = ev.Status
             };
+        }
+        private async Task SyncEventStatusAsync(EEvent ev)
+        {
+            var previousStatus = ev.Status;
+            SetStatusFromSchedule(ev);
+
+            if (ev.Status != previousStatus)
+            {
+                await _eventRepository.UpdateAsync(ev);
+            }
+        }
+
+        private static void SetStatusFromSchedule(EEvent ev)
+        {
+            if (ev.Status == "Cancelled")
+                return;
+
+            var now = DateTime.UtcNow;
+            if (ev.EndDate <= now)
+            {
+                ev.Status = "Inactive";
+            }
+            else if (ev.StartDate <= now)
+            {
+                ev.Status = "Active";
+            }
+            else
+            {
+                ev.Status = "Upcoming";
+            }
         }
     }
 }

@@ -26,6 +26,64 @@ input, button, select, textarea {
   --bg-secondary: #f9f9f9;
 }
 
+body.dark-theme {
+  --color-background-primary: #171821;
+  --color-background-secondary: #222431;
+  --color-border-tertiary: #343747;
+  --color-text-primary: #f4f5f8;
+  --color-text-secondary: #c5c8d4;
+  --color-text-tertiary: #9297a8;
+  --border-color: #343747;
+  --text-primary: #f4f5f8;
+  --text-secondary: #c5c8d4;
+  --text-tertiary: #9297a8;
+  --bg-secondary: #222431;
+  background: #11131a;
+  color: var(--color-text-primary);
+
+  .page-content,
+  .table-card,
+  .modal,
+  .dropdown {
+    background: #171821;
+  }
+
+  .page-title,
+  .table td,
+  .modal-header h3 {
+    color: var(--color-text-primary);
+  }
+
+  .page-sub,
+  .muted,
+  .table th {
+    color: var(--color-text-tertiary);
+  }
+
+  .table th,
+  .table tr:hover td {
+    background: #222431;
+  }
+
+  .table-card,
+  .table th,
+  .table td,
+  .modal,
+  .modal-header,
+  .modal-footer,
+  input,
+  textarea,
+  select {
+    border-color: #343747;
+  }
+
+  input,
+  textarea,
+  select {
+    background: #11131a;
+    color: var(--color-text-primary);
+  }
+}
 .page-header {
   display: flex;
   justify-content: space-between;

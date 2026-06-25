@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,5 +15,7 @@ namespace EventHub.Core.DTOs.Registertions
         public string AttendeeName { get; set; }
         public DateTime RegistrationDate { get; set; }
         public string Status { get; set; }
+        public DateTime EventEndDate { get; set; }
+        public string EventStatus { get; set; }
     }
 }

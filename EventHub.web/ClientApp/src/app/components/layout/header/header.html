@@ -7,6 +7,13 @@
   </div>
 
   <div class="header-right">
+    <button class="icon-btn theme-btn"
+            type="button"
+            [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+            [title]="isDarkMode ? 'Light mode' : 'Dark mode'"
+            (click)="toggleTheme()">
+      <i class="ti" [ngClass]="isDarkMode ? 'ti-sun' : 'ti-moon'" aria-hidden="true"></i>
+    </button>
     <button class="icon-btn">
       <i class="ti ti-bell" aria-hidden="true"></i>
     </button>
