@@ -29,8 +29,14 @@
   border-radius: 8px;
   font-size: 13px;
   cursor: pointer;
-  i { font-size: 16px; }
-  &:hover { background: #4238a0; }
+
+  i {
+    font-size: 16px;
+  }
+
+  &:hover {
+    background: #4238a0;
+  }
 }
 
 .btn-secondary {
@@ -41,7 +47,10 @@
   font-size: 13px;
   cursor: pointer;
   color: var(--color-text-secondary);
-  &:hover { background: var(--color-background-secondary); }
+
+  &:hover {
+    background: var(--color-background-secondary);
+  }
 }
 
 .loading {
@@ -52,8 +61,8 @@
 }
 
 .table-card {
-  background: white;
-  border: 1px solid #e5e5e5;
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-border-tertiary);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -63,7 +72,7 @@
   border-collapse: collapse;
   font-size: 13px;
 
-  th {
+  .table th {
     padding: 12px 16px;
     text-align: left;
     font-size: 11px;
@@ -77,8 +86,8 @@
 
   td {
     padding: 12px 16px;
-    border-bottom: 1px solid #eeeeee; // ← هاد اللي بفصل الصفوف
-    color: #1a1a1a;
+    border-bottom: 1px solid var(--color-border-tertiary);
+    color: var(--color-text-primary);
   }
 
   tr:last-child td {
@@ -86,7 +95,7 @@
   }
 
   tr:hover td {
-    background: #f5f5f5;
+    background: var(--color-background-secondary);
   }
 }
 
@@ -110,7 +119,9 @@
   flex-shrink: 0;
 }
 
-.muted { color: var(--color-text-secondary); }
+.muted {
+  color: var(--color-text-secondary);
+}
 
 .badge {
   font-size: 11px;
@@ -118,9 +129,20 @@
   border-radius: 20px;
   font-weight: 500;
 
-  &.badge-admin { background: #EEEDFE; color: #534AB7; }
-  &.badge-organizer { background: #E1F5EE; color: #0F6E56; }
-  &.badge-attendee { background: #E6F1FB; color: #185FA5; }
+  &.badge-admin {
+    background: #EEEDFE;
+    color: #534AB7;
+  }
+
+  &.badge-organizer {
+    background: #E1F5EE;
+    color: #0F6E56;
+  }
+
+  &.badge-attendee {
+    background: #E6F1FB;
+    color: #185FA5;
+  }
 }
 
 .status-select {
@@ -131,8 +153,13 @@
   cursor: pointer;
   background: transparent;
 
-  &.status-active { color: #3B6D11; }
-  &.status-inactive { color: #A32D2D; }
+  &.status-active {
+    color: #3B6D11;
+  }
+
+  &.status-inactive {
+    color: #A32D2D;
+  }
 }
 
 .actions {
@@ -151,9 +178,20 @@
   justify-content: center;
   cursor: pointer;
   color: var(--color-text-secondary);
-  i { font-size: 15px; }
-  &:hover { background: var(--color-background-secondary); }
-  &.danger:hover { background: #FCEBEB; color: #A32D2D; border-color: #F09595; }
+
+  i {
+    font-size: 15px;
+  }
+
+  &:hover {
+    background: var(--color-background-secondary);
+  }
+
+  &.danger:hover {
+    background: #FCEBEB;
+    color: #A32D2D;
+    border-color: #F09595;
+  }
 }
 
 .modal-overlay {
@@ -167,12 +205,12 @@
 }
 
 .modal {
-  background: #ffffff;
+  background: var(--color-background-primary);
   border-radius: 12px;
-  border: 0.5px solid #e0e0e0;
+  border: 0.5px solid var(--color-border-tertiary);
   width: 440px;
   margin: 24px auto;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
 }
 
 .modal-header {
@@ -182,7 +220,12 @@
   padding: 16px 20px;
   border-bottom: 0.5px solid var(--color-border-tertiary);
 
-  h3 { font-size: 15px; font-weight: 500; margin: 0; color: var(--color-text-primary); }
+  h3 {
+    font-size: 15px;
+    font-weight: 500;
+    margin: 0;
+    color: var(--color-text-primary);
+  }
 }
 
 .modal-body {
@@ -197,7 +240,11 @@
   flex-direction: column;
   gap: 6px;
 
-  label { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); }
+  label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+  }
 
   input, select {
     padding: 8px 12px;
@@ -206,7 +253,16 @@
     font-size: 13px;
     color: var(--color-text-primary);
     background: var(--color-background-primary);
-    &:focus { outline: none; border-color: #534AB7; }
+    outline: none;
+
+    &:focus {
+      border-color: #534AB7;
+      box-shadow: 0 0 0 3px rgba(83, 74, 183, 0.1);
+    }
+
+    &::placeholder {
+      color: var(--color-text-tertiary);
+    }
   }
 }
 
@@ -216,35 +272,4 @@
   gap: 8px;
   padding: 16px 20px;
   border-top: 0.5px solid var(--color-border-tertiary);
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-
-  label {
-    font-size: 12px;
-    font-weight: 500;
-    color: #555;
-  }
-
-  input, select {
-    padding: 8px 12px;
-    border: 1px solid #d0d0d0;
-    border-radius: 8px;
-    font-size: 13px;
-    color: #1a1a1a;
-    background: #fff;
-    outline: none;
-
-    &:focus {
-      border-color: #534AB7;
-      box-shadow: 0 0 0 3px rgba(83, 74, 183, 0.1);
-    }
-
-    &::placeholder {
-      color: #aaa;
-    }
-  }
 }

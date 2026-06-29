@@ -24,6 +24,20 @@ input, button, select, textarea {
   --text-secondary: #555;
   --text-tertiary: #888;
   --bg-secondary: #f9f9f9;
+  /* Light mode variables */
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f9f9f9;
+  --color-background-tertiary: #f0f0f0;
+  --color-border-tertiary: #e5e5e5;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #555;
+  --color-text-tertiary: #888;
+  /* Legacy */
+  --border-color: #e5e5e5;
+  --text-primary: #1a1a1a;
+  --text-secondary: #555;
+  --text-tertiary: #888;
+  --bg-secondary: #f9f9f9;
 }
 
 body.dark-theme {

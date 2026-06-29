@@ -12,12 +12,12 @@
 .welcome-title {
   font-size: 1.6rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
   margin: 0 0 0.25rem;
 }
 
 .welcome-sub {
-  color: #888;
+  color: var(--color-text-primary);
   margin: 0;
   font-size: 0.9rem;
 }
@@ -140,7 +140,7 @@
 .section-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
   margin: 0 0 1rem;
 }
 

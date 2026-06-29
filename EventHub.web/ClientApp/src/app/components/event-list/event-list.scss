@@ -1,9 +1,9 @@
 .event-list {
-  margin-top: 70px; // لأن الهيدر ثابت
+  margin-top: 70px;
   padding: 1rem;
 
   .event-card {
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-border-tertiary);
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1rem;
@@ -25,12 +25,12 @@
 .page-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
   margin: 0 0 0.25rem;
 }
 
 .page-subtitle {
-  color: #666;
+  color: var(--color-text-secondary);
   margin: 0;
   font-size: 0.9rem;
 }
@@ -70,9 +70,9 @@
 }
 
 .table-wrapper {
-  background: white;
+  background: var(--color-background-primary);
   border-radius: 12px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--color-border-tertiary);
   overflow: hidden;
 }
 
@@ -81,17 +81,17 @@
   border-collapse: collapse;
 
   thead {
-    background: #f9f9f9;
+    background: var(--color-background-secondary);
 
     th {
       text-align: left;
       padding: 0.85rem 1rem;
       font-size: 0.8rem;
       font-weight: 600;
-      color: #888;
+      color: var(--color-text-tertiary);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      border-bottom: 1px solid #e5e5e5;
+      border-bottom: 1px solid var(--color-border-tertiary);
     }
   }
 
@@ -99,10 +99,10 @@
     tr.table-row {
       cursor: pointer;
       transition: background 0.15s;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid var(--color-border-tertiary);
 
       &:hover {
-        background: #fafafa;
+        background: var(--color-background-secondary);
       }
 
       &:last-child {
@@ -113,15 +113,10 @@
     td {
       padding: 0.9rem 1rem;
       font-size: 0.9rem;
-      color: #1a1a1a;
+      color: var(--color-text-primary);
     }
   }
 }
-
-.title-cell {
-  font-weight: 500;
-}
-
 .status-badge {
   display: inline-block;
   padding: 0.25rem 0.65rem;

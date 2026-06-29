@@ -6,7 +6,7 @@
 .loading-state {
   text-align: center;
   padding: 3rem;
-  color: #999;
+  color: var(--color-text-tertiary);
 }
 
 .error-banner {
@@ -43,8 +43,8 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  background: white;
-  border: 1px solid #e5e5e5;
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-border-tertiary);
   border-radius: 12px;
   padding: 1.75rem 2rem;
   margin-bottom: 1rem;
@@ -73,12 +73,12 @@
 .hero-name {
   font-size: 1.3rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
   margin: 0;
 }
 
 .hero-email {
-  color: #888;
+  color: var(--color-text-tertiary);
   font-size: 0.85rem;
   margin: 0;
 }
@@ -96,8 +96,8 @@
 
 // Cards
 .info-card {
-  background: white;
-  border: 1px solid #e5e5e5;
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-border-tertiary);
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 1rem;
@@ -108,19 +108,19 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.75rem;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid var(--color-border-tertiary);
 }
 
 .card-title {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
   margin: 0 0 0.2rem;
 }
 
 .card-subtitle {
   font-size: 0.8rem;
-  color: #aaa;
+  color: var(--color-text-tertiary);
   margin: 0;
 }
 
@@ -140,7 +140,7 @@
   flex-direction: column;
   gap: 0.3rem;
   padding: 0.75rem 0;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid var(--color-border-tertiary);
 
   &:nth-last-child(-n+2) {
     border-bottom: none;
@@ -149,7 +149,7 @@
 
 .info-label {
   font-size: 0.75rem;
-  color: #aaa;
+  color: var(--color-text-tertiary);
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -183,15 +183,16 @@
 .form-label {
   font-size: 0.83rem;
   font-weight: 500;
-  color: #555;
+  color: var(--color-text-secondary);
 }
 
 .form-input {
   padding: 0.6rem 0.85rem;
-  border: 1px solid #e0e0e0;
   border-radius: 8px;
   font-size: 0.88rem;
-  color: #1a1a1a;
+  border: 1px solid var(--color-border-tertiary);
+  color: var(--color-text-primary);
+  background: var(--color-background-primary);
   outline: none;
   font-family: inherit;
   transition: border-color 0.2s;
@@ -201,7 +202,7 @@
   }
 
   &::placeholder {
-    color: #ccc;
+    color: var(--color-text-tertiary);
   }
 }
 
@@ -214,9 +215,9 @@
 
 // Buttons
 .btn-primary {
-  background: #534AB7; 
-  color: white;
-  border: none;
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-tertiary);
   padding: 0.55rem 1.2rem;
   border-radius: 8px;
   font-size: 0.88rem;
@@ -246,7 +247,7 @@
   transition: background 0.2s;
 
   &:hover {
-    background: #f5f5f5;
+    background: var(--color-background-secondary);
   }
 }
 
