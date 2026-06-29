@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventSummaryService } from '../../../services/event-summary';
 import { AiProvider } from '../../../models/event-summary';
@@ -10,7 +10,7 @@ import { AiProvider } from '../../../models/event-summary';
   templateUrl: './event-summary.html',
   styleUrl: './event-summary.scss'
 })
-export class EventSummaryComponent implements OnChanges {
+export class EventSummaryComponent {
   private summaryService = inject(EventSummaryService);
 
   @Input({ required: true }) eventId!: number;
@@ -21,12 +21,6 @@ export class EventSummaryComponent implements OnChanges {
   error = '';
   provider: AiProvider = this.loadProvider();
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['eventId'] && this.eventId) {
-      this.loadSummary();
-    }
-  }
-
   loadProvider(): AiProvider {
     const saved = localStorage.getItem('aiProvider');
     return saved === 'gemini' ? 'gemini' : 'openai';
@@ -34,9 +28,13 @@ export class EventSummaryComponent implements OnChanges {
 
   switchProvider(provider: AiProvider) {
     if (this.provider === provider) return;
+    const hadSummary = this.summary !== '';
     this.provider = provider;
     localStorage.setItem('aiProvider', provider);
-    this.loadSummary();
+    this.summary = '';
+    this.error = '';
+
+    if (hadSummary) this.loadSummary(); 
   }
 
   loadSummary() {

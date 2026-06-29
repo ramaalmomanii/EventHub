@@ -18,6 +18,12 @@
     </div>
   </div>
 
+  @if (!summary && !loading && !error) {
+  <button class="btn-generate" (click)="loadSummary()">
+    ✨ Generate Summary
+  </button>
+  }
+
   @if (loading) {
   <div class="ai-loading">
     <span class="spinner"></span>

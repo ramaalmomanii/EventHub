@@ -70,6 +70,7 @@ export class EventDetail implements OnInit {
 
   loadMyRegistration(eventId: number) {
     const userId = this.authService.getUserId();
+    if (!userId) return;  
     this.registrationService.getByUserAndEvent(userId, eventId).subscribe({
       next: (reg) => this.myRegistration = reg,
       error: () => this.myRegistration = null
